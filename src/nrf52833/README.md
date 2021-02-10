@@ -36,13 +36,13 @@ To build the examples, run the following command in Bash:
 
 ```bash
 $ cd <path-to-ot-nrf528xx>
-$ ./script/build nrf52833
+$ ./script/build nrf52833 UART_trans
 ```
 
-After a successful build, the `elf` files can be found in `<path-to-ot-nrf528xx>/openthread/examples/apps/`. You can convert them to hex using `arm-none-eabi-objcopy`:
+After a successful build, the `elf` files can be found in `<path-to-ot-nrf528xx>/build/openthread/examples/apps/*`. You can convert them to hex using `arm-none-eabi-objcopy`:
 
 ```bash
-$ arm-none-eabi-objcopy -O ihex ot-cli-ftd ot-cli-ftd.hex
+$ arm-none-eabi-objcopy -O ihex build/openthread/examples/apps/cli/ot-cli-ftd ot-cli-ftd.hex
 ```
 
 ### USB CDC ACM support
@@ -65,11 +65,11 @@ The examples support the following bootloaders for performing a Device Firmware 
 - UART bootloader
 - BLE bootloader
 
-The support for a particular bootloader can be enabled with the following switches:
+The support for a particular bootloader can be enabled by adding the following option:
 
-- USB: `BOOTLOADER=USB`
-- UART: `BOOTLOADER=UART`
-- BLE: `BOOTLOADER=BLE`
+- USB: `-DOT_BOOTLOADER=USB`
+- UART: `-DOT_BOOTLOADER=UART`
+- BLE: `-DOT_BOOTLOADER=BLE`
 
 ### Native SPI support
 
@@ -100,7 +100,7 @@ You can prefix the compiler command using the CCPREFIX parameter. This speeds up
 [ccache-website]: https://ccache.samba.org/
 
 ```
-$ ./script/build nrf52833 USB_trans_bl CCPREFIX=ccache
+$ ./script/build nrf52833 USB_trans CCPREFIX=ccache
 ```
 
 ### Optional mbedTLS threading support
@@ -147,7 +147,7 @@ After the Thread Network security credentials have been successfully obtained, t
 Flash the compiled binaries onto nRF52833 using `nrfjprog` which is part of the [nRF5 Command Line Tools][nrf5-command-line-tools].
 
 ```bash
-$ nrfjprog -f nrf52 --chiperase --program output/nrf52833/bin/ot-cli-ftd.hex --reset
+$ nrfjprog -f nrf52 --chiperase --program ot-cli-ftd.hex --reset
 ```
 
 ## Running the example
@@ -250,7 +250,7 @@ To test the example:
 
 For a list of all available commands, visit [OpenThread CLI Reference README.md][cli].
 
-[cli]: ./../../../src/cli/README.md
+[cli]: https://github.com/openthread/openthread/tree/master/src/cli/README.md
 
 ## SEGGER J-Link tools
 
@@ -262,10 +262,10 @@ By default, the OpenThread's logging module provides functions to output logging
 
 You can set the desired log level by using the `OPENTHREAD_CONFIG_LOG_LEVEL` define.
 
-To enable the highest verbosity level, append `FULL_LOGS` flag to the build command:
+To enable the highest verbosity level, append `-DOT_FULL_LOGS=ON` flag to the build command:
 
 ```
-$ ./script/build nrf52833 -DOT_FULL_LOGS=1
+$ ./script/build nrf52833 UART_trans -DOT_FULL_LOGS=1
 ```
 
 #### Enable logging on Windows
@@ -374,7 +374,7 @@ nRF52833 port extends [OpenThread Diagnostics Module][diag].
 
 You can read about all the features [here][nrfdiag].
 
-[diag]: ./../../../src/core/diags/README.md
+[diag]: https://github.com/openthread/openthread/tree/master/src/core/diags/README.md
 [nrfdiag]: ./../DIAG.md
 
 ## Radio driver documentation

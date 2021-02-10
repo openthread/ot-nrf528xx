@@ -32,7 +32,7 @@ set -euxo pipefail
 OT_CMAKE_NINJA_TARGET=${OT_CMAKE_NINJA_TARGET:-}
 
 readonly NRF_PLATFORMS=(nrf52811 nrf52833 nrf52840)
-readonly NRF_BUILD_TYPES=(UART_trans USB_trans_bl SPI_trans_NCP soft_crypto soft_crypto_threading)
+readonly NRF_BUILD_TYPES=(UART_trans USB_trans SPI_trans_NCP soft_crypto soft_crypto_threading)
 
 readonly OT_SRCDIR="$(pwd)"
 readonly OT_OPTIONS=(
@@ -69,7 +69,7 @@ readonly OT_nrf52840_OPTIONS=("${OT_nrf52833_OPTIONS[@]:0}")
 
 die()
 {
-    echo " ** ERROR: Unsupported platform \"$1\""
+    echo " ** ERROR: $1"
     exit 1
 }
 
@@ -99,7 +99,7 @@ main()
     fi
 
     local platform="$1"
-    echo "${NRF_PLATFORMS[@]}" | grep -wq "${platform}" || die "${platform}"
+    echo "${NRF_PLATFORMS[@]}" | grep -wq "${platform}" || die "Unsupported platform ${platform}"
 
     if [[ $# == 1 ]]; then
         echo "Please specify build type: ${NRF_BUILD_TYPES[*]}"
@@ -107,7 +107,7 @@ main()
     fi
 
     local nrf_build_type="$2"
-    echo "${NRF_BUILD_TYPES[@]}" | grep -wq "${nrf_build_type}" || die "${nrf_build_type}"
+    echo "${NRF_BUILD_TYPES[@]}" | grep -wq "${nrf_build_type}" || die "Unsupported build option ${nrf_build_type}"
 
     shift
     shift
@@ -135,8 +135,8 @@ main()
                 UART_trans)
                     options+=("${local_options[@]}")
                     ;;
-                USB_trans_bl)
-                    options+=("${local_options[@]}" "-DOT_USB=ON" "-DOT_BOOTLOADER=USB")
+                USB_trans)
+                    options+=("${local_options[@]}" "-DOT_USB=ON")
                     ;;
                 SPI_trans_NCP)
                     OT_CMAKE_NINJA_TARGET=("ot-ncp-ftd" "ot-ncp-mtd" "ot-rcp")
@@ -150,8 +150,8 @@ main()
                 UART_trans)
                     options+=("${local_options[@]}" "-DOT_EXTERNAL_MBEDTLS=nordicsemi-mbedtls")
                     ;;
-                USB_trans_bl)
-                    options+=("${local_options[@]}" "-DOT_USB=ON" "-DOT_BOOTLOADER=USB" "-DOT_EXTERNAL_MBEDTLS=nordicsemi-mbedtls")
+                USB_trans)
+                    options+=("${local_options[@]}" "-DOT_USB=ON" "-DOT_EXTERNAL_MBEDTLS=nordicsemi-mbedtls")
                     ;;
                 SPI_trans_NCP)
                     OT_CMAKE_NINJA_TARGET=("ot-ncp-ftd" "ot-ncp-mtd" "ot-rcp")

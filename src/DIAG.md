@@ -1,6 +1,6 @@
 ## Diagnostic module
 
-nRF52811 and nRF52840 ports extend [OpenThread Diagnostics Module][diag].
+nRF528xx ports extend [OpenThread Diagnostics Module][diag].
 
 New commands allow for more accurate low level radio testing.
 
@@ -171,4 +171,4 @@ Start transmiting messages with specified interval.
 
 Start transmitting continuous carrier wave.
 
-[diag]: ./../../../src/core/diags/README.md
+[diag]: https://github.com/openthread/openthread/tree/master/src/core/diags/README.md
