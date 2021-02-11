@@ -63,14 +63,15 @@ To build the firmware using default UART RCP transport, run the following make c
 
 ```bash
 $ cd <path-to-ot-nrf528xx>
-$ ./script/build nrf52811
+$ ./script/build nrf52811 UART_trans
 ```
 
-After a successful build, the `elf` files can be found in `<path-to-ot-nrf528xx>/openthread/output/nrf52811/bin`. You can convert them to hex using `arm-none-eabi-objcopy`:
+After a successful build, the `elf` files can be found in `<path-to-ot-nrf528xx>/build/openthread/examples/apps/*`. You can convert them to hex using `arm-none-eabi-objcopy`:
 
 ```bash
-$ arm-none-eabi-objcopy -O ihex ot-cli-mtd ot-cli-mtd.hex
-$ arm-none-eabi-objcopy -O ihex ot-rcp ot-rcp.hex
+$ arm-none-eabi-objcopy -O ihex build/openthread/examples/apps/cli/ot-cli-mtd ot-cli-mtd.hex
+$ arm-none-eabi-objcopy -O ihex build/openthread/examples/apps/ncp/ot-rcp ot-rcp.hex
+
 ```
 
 ### Building the firmware with native SPI support
@@ -115,7 +116,7 @@ Once the examples and libraries are built, flash the compiled binaries onto nRF5
 Run the following command:
 
 ```bash
-$ nrfjprog -f nrf52 --chiperase --program output/nrf52811/bin/ot-cli-mtd.hex --reset
+$ nrfjprog -f nrf52 --chiperase --program ot-cli-mtd.hex --reset
 ```
 
 ## Running the example
@@ -230,7 +231,7 @@ To test the example:
 
 For a list of all available commands, visit [OpenThread CLI Reference README.md][cli].
 
-[cli]: ./../../../src/cli/README.md
+[cli]: https://github.com/openthread/openthread/tree/master/src/cli/README.md
 
 ## SEGGER J-Link tools
 
@@ -242,10 +243,10 @@ By default, the OpenThread's logging module provides functions to output logging
 
 You can set the desired log level by using the `OPENTHREAD_CONFIG_LOG_LEVEL` define.
 
-To enable the highest verbosity level, append `FULL_LOGS` flag to the build command:
+To enable the highest verbosity level, append `-DOT_FULL_LOGS=ON` flag to the build command:
 
 ```
-$ ./script/build nrf52811 -DOT_FULL_LOGS=ON
+$ ./script/build nrf52811 UART_trans -DOT_FULL_LOGS=ON
 ```
 
 #### Enable logging on Windows
@@ -354,7 +355,7 @@ nRF52811 supports [OpenThread Diagnostics Module][diag], with some additional fe
 
 For more information, see [nRF Diag command reference][nrfdiag].
 
-[diag]: ./../../../src/core/diags/README.md
+[diag]: https://github.com/openthread/openthread/tree/master/src/core/diags/README.md
 [nrfdiag]: ./../DIAG.md
 
 ## Radio driver documentation

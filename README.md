@@ -19,9 +19,9 @@ To learn more about building and running the examples please check:
 - [OpenThread on nRF52833 examples][nrf52833-page]
 - [OpenThread on nRF52811 examples][nrf52811-page]
 
-[nrf52840-page]: ./nrf52840/README.md
-[nrf52833-page]: ./nrf52833/README.md
-[nrf52811-page]: ./nrf52811/README.md
+[nrf52840-page]: src/nrf52840/README.md
+[nrf52833-page]: src/nrf52833/README.md
+[nrf52811-page]: src/nrf52811/README.md
 
 # Contributing
 

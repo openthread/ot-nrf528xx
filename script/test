@@ -49,7 +49,19 @@ main()
     "$(dirname "$0")"/build nrf52840 UART_trans "${OT_OPTIONS[@]}"
 
     rm -rf "$OT_BUILDDIR"
-    "$(dirname "$0")"/build nrf52840 USB_trans_bl "${OT_OPTIONS[@]}"
+    "$(dirname "$0")"/build nrf52833 USB_trans "${OT_OPTIONS[@]}"
+
+    rm -rf "$OT_BUILDDIR"
+    "$(dirname "$0")"/build nrf52840 USB_trans "${OT_OPTIONS[@]}"
+
+    rm -rf "$OT_BUILDDIR"
+    "$(dirname "$0")"/build nrf52840 USB_trans -DOT_BOOTLOADER=USB "${OT_OPTIONS[@]}"
+
+    rm -rf "$OT_BUILDDIR"
+    "$(dirname "$0")"/build nrf52811 SPI_trans_NCP "${OT_OPTIONS[@]}"
+
+    rm -rf "$OT_BUILDDIR"
+    "$(dirname "$0")"/build nrf52833 SPI_trans_NCP "${OT_OPTIONS[@]}"
 
     rm -rf "$OT_BUILDDIR"
     "$(dirname "$0")"/build nrf52840 SPI_trans_NCP "${OT_OPTIONS[@]}"
