@@ -44,10 +44,10 @@ $ cd <path-to-ot-nrf528xx>
 $ ./script/build nrf52840 UART_trans
 ```
 
-After a successful build, the `elf` files can be found in `<path-to-ot-nrf528xx>/build/openthread/examples/apps/*`. You can convert them to hex using `arm-none-eabi-objcopy`:
+After a successful build, the `elf` files can be found in `<path-to-ot-nrf528xx>/build/bin/*`. You can convert them to hex using `arm-none-eabi-objcopy`:
 
 ```bash
-$ arm-none-eabi-objcopy -O ihex build/openthread/examples/apps/cli/ot-cli-ftd ot-cli-ftd.hex
+$ arm-none-eabi-objcopy -O ihex build/bin/ot-cli-ftd ot-cli-ftd.hex
 ```
 
 ### USB CDC ACM support
