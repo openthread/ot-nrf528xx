@@ -41,6 +41,10 @@ endif()
 
 set(OT_PLATFORM_LIB "openthread-${NRF_PLATFORM}" "openthread-${NRF_PLATFORM}-transport")
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+
 add_subdirectory(openthread)
 
 target_compile_definitions(ot-config INTERFACE
