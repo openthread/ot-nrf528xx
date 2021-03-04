@@ -91,7 +91,7 @@ jobs:
         # use the minimal required cmake version
         sudo pip3 install --system -U cmake==3.10.3
         cmake --version | grep 3.10.3
-    - name: Build
+    - name: Check
       run: |
         export PATH=/tmp/${{ matrix.gcc_extract_dir }}/bin:$PATH
         script/test
