@@ -110,7 +110,7 @@ The default SPI Slave pin configuration for nRF52840 is defined in `examples/pla
 
 Note that the native SPI Slave support is not intended to be used with Engineering sample A of the nRF52840 chip due to single transfer size limitation.
 
-[spi-hdlc-adapter]: https://github.com/openthread/openthread/tree/master/tools/spi-hdlc-adapter
+[spi-hdlc-adapter]: https://github.com/openthread/openthread/tree/main/tools/spi-hdlc-adapter
 
 ### Optional prefix for compiler command
 
@@ -387,7 +387,7 @@ To test the example:
 
 For a list of all available commands, visit [OpenThread CLI Reference README.md][cli].
 
-[cli]: https://github.com/openthread/openthread/tree/master/src/cli/README.md
+[cli]: https://github.com/openthread/openthread/tree/main/src/cli/README.md
 
 ## SEGGER J-Link tools
 
@@ -511,7 +511,7 @@ nRF52840 port extends [OpenThread Diagnostics Module][diag].
 
 You can read about all the features [here][nrfdiag].
 
-[diag]: https://github.com/openthread/openthread/tree/master/src/core/diags/README.md
+[diag]: https://github.com/openthread/openthread/tree/main/src/core/diags/README.md
 [nrfdiag]: ./../DIAG.md
 
 ## Radio driver documentation

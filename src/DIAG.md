@@ -171,4 +171,4 @@ Start transmiting messages with specified interval.
 
 Start transmitting continuous carrier wave.
 
-[diag]: https://github.com/openthread/openthread/tree/master/src/core/diags/README.md
+[diag]: https://github.com/openthread/openthread/tree/main/src/core/diags/README.md
