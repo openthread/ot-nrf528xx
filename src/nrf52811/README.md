@@ -92,7 +92,7 @@ In this example, [spi-hdlc-adapter][spi-hdlc-adapter] is a tool that you can use
 
 The default SPI Slave pin configuration for nRF52811 is defined in `examples/platforms/nrf52811/transport-config.h`.
 
-[spi-hdlc-adapter]: https://github.com/openthread/openthread/tree/master/tools/spi-hdlc-adapter
+[spi-hdlc-adapter]: https://github.com/openthread/openthread/tree/main/tools/spi-hdlc-adapter
 
 ### IEEE EUI-64 address
 
@@ -231,7 +231,7 @@ To test the example:
 
 For a list of all available commands, visit [OpenThread CLI Reference README.md][cli].
 
-[cli]: https://github.com/openthread/openthread/tree/master/src/cli/README.md
+[cli]: https://github.com/openthread/openthread/tree/main/src/cli/README.md
 
 ## SEGGER J-Link tools
 
@@ -355,7 +355,7 @@ nRF52811 supports [OpenThread Diagnostics Module][diag], with some additional fe
 
 For more information, see [nRF Diag command reference][nrfdiag].
 
-[diag]: https://github.com/openthread/openthread/tree/master/src/core/diags/README.md
+[diag]: https://github.com/openthread/openthread/tree/main/src/core/diags/README.md
 [nrfdiag]: ./../DIAG.md
 
 ## Radio driver documentation
