@@ -183,6 +183,16 @@
 #endif
 
 /**
+ * @def OPENTHREAD_CONFIG_MAC_SOFTWARE_RX_TIMING_ENABLE
+ *
+ * Define to 1 to enable software reception target time logic.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_SOFTWARE_RX_TIMING_ENABLE
+#define OPENTHREAD_CONFIG_MAC_SOFTWARE_RX_TIMING_ENABLE (OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2)
+#endif
+
+/**
  * @def OPENTHREAD_CONFIG_PLATFORM_USEC_TIMER_ENABLE
  *
  * Define to 1 if you want to support microsecond timer in platform.
@@ -221,7 +231,7 @@
  *
  */
 #ifndef OPENTHREAD_CONFIG_HEAP_INTERNAL_SIZE_NO_DTLS
-#define OPENTHREAD_CONFIG_HEAP_INTERNAL_SIZE_NO_DTLS 2048
+#define OPENTHREAD_CONFIG_HEAP_INTERNAL_SIZE_NO_DTLS 4000
 #endif
 
 /**
@@ -279,24 +289,24 @@
 #endif
 
 /**
- * @def OPENTHREAD_CONFIG_CSL_SAMPLE_WINDOW
- *
- * CSL sample window in units of 10 symbols.
- *
- */
-#ifndef OPENTHREAD_CONFIG_CSL_SAMPLE_WINDOW
-#define OPENTHREAD_CONFIG_CSL_SAMPLE_WINDOW 5
-#endif
-
-/**
  * @def OPENTHREAD_CONFIG_CSL_RECEIVE_TIME_AHEAD
  *
- * For some reasons, CSL receivers wake up a little later than expected. This variable specifies how much time that
- * CSL receiver would wake up earlier than the expected sample window. The time is in unit of 10 symbols.
+ * Reception scheduling and ramp up time needed for the CSL receiver to be ready, in units of microseconds.
  *
  */
 #ifndef OPENTHREAD_CONFIG_CSL_RECEIVE_TIME_AHEAD
-#define OPENTHREAD_CONFIG_CSL_RECEIVE_TIME_AHEAD 3
+#define OPENTHREAD_CONFIG_CSL_RECEIVE_TIME_AHEAD 2000
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_CSL_MIN_RECEIVE_ON
+ *
+ * The minimum CSL receive window (in microseconds) required to receive an IEEE 802.15.4 frame.
+ * - Frame preamble: 6*2 symbols + margin
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_CSL_MIN_RECEIVE_ON
+#define OPENTHREAD_CONFIG_CSL_MIN_RECEIVE_ON 12 * 16
 #endif
 
 /*
