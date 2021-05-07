@@ -51,7 +51,6 @@
 #include <platform-config.h>
 #include <openthread/platform/alarm-micro.h>
 #include <openthread/platform/diag.h>
-#include <openthread/platform/logging.h>
 #include <openthread/platform/radio.h>
 #include <openthread/platform/time.h>
 
@@ -80,6 +79,7 @@
 #define SECURITY_ENABLED_BIT     (1 << 3)  ///< Security enabled bit.
 
 #define RSSI_SETTLE_TIME_US   40           ///< RSSI settle time in microseconds.
+#define SAFE_DELTA            1000         ///< A safe value for the `dt` parameter of delayed operations.
 
 #if defined(__ICCARM__)
 _Pragma("diag_suppress=Pe167")
@@ -489,12 +489,26 @@ otError otPlatRadioReceive(otInstance *aInstance, uint8_t aChannel)
     }
 
     nrf_802154_tx_power_set(GetTransmitPowerForChannel(aChannel));
-
     result = nrf_802154_receive();
     clearPendingEvents();
 
     return result ? OT_ERROR_NONE : OT_ERROR_INVALID_STATE;
 }
+
+#if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
+otError otPlatRadioReceiveAt(otInstance *aInstance, uint8_t aChannel, uint32_t aStart, uint32_t aDuration)
+{
+    OT_UNUSED_VARIABLE(aInstance);
+
+    bool result;
+
+    nrf_802154_tx_power_set(GetTransmitPowerForChannel(aChannel));
+    result = nrf_802154_receive_at(aStart - SAFE_DELTA, SAFE_DELTA, aDuration, aChannel);
+    clearPendingEvents();
+
+    return result ? OT_ERROR_NONE : OT_ERROR_FAILED;
+}
+#endif
 
 otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aFrame)
 {
@@ -510,6 +524,12 @@ otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aFrame)
     }
 
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
+    if (otMacFrameIsSecurityEnabled(aFrame) && otMacFrameIsKeyIdMode1(aFrame) && !aFrame->mInfo.mTxInfo.mIsARetx)
+    {
+        otMacFrameSetKeyId(aFrame, sKeyId);
+        otMacFrameSetFrameCounter(aFrame, sMacFrameCounter++);
+    }
+
     if (aFrame->mInfo.mTxInfo.mTxDelay != 0)
     {
         if (!nrf_802154_transmit_raw_at(&aFrame->mPsdu[-1], true, aFrame->mInfo.mTxInfo.mTxDelayBaseTime,
@@ -570,7 +590,7 @@ otRadioCaps otPlatRadioGetCaps(otInstance *aInstance)
 
     return (otRadioCaps)(OT_RADIO_CAPS_ENERGY_SCAN | OT_RADIO_CAPS_ACK_TIMEOUT | OT_RADIO_CAPS_CSMA_BACKOFF |
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
-                         OT_RADIO_CAPS_TRANSMIT_SEC | OT_RADIO_CAPS_TRANSMIT_TIMING |
+                         OT_RADIO_CAPS_TRANSMIT_SEC | OT_RADIO_CAPS_TRANSMIT_TIMING | OT_RADIO_CAPS_RECEIVE_TIMING |
 #endif
                          OT_RADIO_CAPS_SLEEP_TO_TX);
 }
@@ -1048,6 +1068,7 @@ void nrf_802154_receive_failed(nrf_802154_rx_error_t error)
     case NRF_802154_RX_ERROR_ABORTED:
     case NRF_802154_RX_ERROR_DELAYED_TIMESLOT_DENIED:
     case NRF_802154_RX_ERROR_INVALID_LENGTH:
+    case NRF_802154_RX_ERROR_DELAYED_ABORTED:
         sReceiveError = OT_ERROR_FAILED;
         break;
 
@@ -1060,7 +1081,17 @@ void nrf_802154_receive_failed(nrf_802154_rx_error_t error)
     sAckedWithSecEnhAck = false;
 #endif
 
-    setPendingEvent(kPendingEventReceiveFailed);
+#if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
+    if ((error == NRF_802154_RX_ERROR_DELAYED_TIMEOUT) || (error == NRF_802154_RX_ERROR_TIMESLOT_ENDED))
+    {
+        sReceiveError = OT_ERROR_NONE;
+        setPendingEvent(kPendingEventSleep);
+    }
+    else
+#endif
+    {
+        setPendingEvent(kPendingEventReceiveFailed);
+    }
 }
 
 #if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
@@ -1069,7 +1100,6 @@ static uint16_t getCslPhase()
     uint32_t curTime       = otPlatAlarmMicroGetNow();
     uint32_t cslPeriodInUs = sCslPeriod * OT_US_PER_TEN_SYMBOLS;
     uint32_t diff = (cslPeriodInUs - (curTime % cslPeriodInUs) + (sCslSampleTime % cslPeriodInUs)) % cslPeriodInUs;
-
     return (uint16_t)(diff / OT_US_PER_TEN_SYMBOLS + 1);
 }
 #endif
@@ -1187,7 +1217,9 @@ int8_t otPlatRadioGetReceiveSensitivity(otInstance *aInstance)
 void nrf_802154_tx_started(const uint8_t *aFrame)
 {
     bool processSecurity = false;
+
     assert(aFrame == sTransmitPsdu);
+    OT_UNUSED_VARIABLE(aFrame);
 
 #if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
     if (sCslPeriod > 0)
@@ -1221,12 +1253,6 @@ void nrf_802154_tx_started(const uint8_t *aFrame)
              !sTransmitFrame.mInfo.mTxInfo.mIsSecurityProcessed);
 
     sTransmitFrame.mInfo.mTxInfo.mAesKey = &sCurrKey;
-
-    if (!sTransmitFrame.mInfo.mTxInfo.mIsARetx)
-    {
-        otMacFrameSetKeyId(&sTransmitFrame, sKeyId);
-        otMacFrameSetFrameCounter(&sTransmitFrame, sMacFrameCounter++);
-    }
 
     processSecurity = true;
 #endif // OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
@@ -1365,6 +1391,13 @@ void otPlatRadioUpdateCslSampleTime(otInstance *aInstance, uint32_t aCslSampleTi
     OT_UNUSED_VARIABLE(aInstance);
 
     sCslSampleTime = aCslSampleTime;
+}
+
+uint8_t otPlatRadioGetCslAccuracy(otInstance *aInstance)
+{
+    OT_UNUSED_VARIABLE(aInstance);
+
+    return otPlatTimeGetXtalAccuracy() / 2;
 }
 #endif // OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
 
