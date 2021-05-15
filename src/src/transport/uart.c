@@ -143,7 +143,11 @@ exit:
 
 otError otPlatUartFlush(void)
 {
-    return OT_ERROR_NOT_IMPLEMENTED;
+    while (sTransmitBuffer && !sTransmitDone)
+    {
+        // Wait until the transmission is done
+    }
+    return OT_ERROR_NONE;
 }
 
 /**
