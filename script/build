@@ -41,32 +41,6 @@ readonly OT_OPTIONS=(
     "-DOT_SLAAC=ON"
 )
 
-readonly OT_nrf52811_OPTIONS=(
-    "-DOT_COAP=ON"
-    "-DOT_DNS_CLIENT=ON"
-    "-DOT_LINK_RAW=ON"
-    "-DOT_MAC_FILTER=ON"
-    "-DOT_MTD_NETDIAG=ON"
-)
-
-readonly OT_nrf52833_OPTIONS=(
-    "-DOT_BORDER_AGENT=ON"
-    "-DOT_BORDER_ROUTER=ON"
-    "-DOT_COAP=ON"
-    "-DOT_COAPS=ON"
-    "-DOT_ECDSA=ON"
-    "-DOT_FULL_LOGS=ON"
-    "-DOT_IP6_FRAGM=ON"
-    "-DOT_LINK_RAW=ON"
-    "-DOT_MAC_FILTER=ON"
-    "-DOT_MTD_NETDIAG=ON"
-    "-DOT_SERVICE=ON"
-    "-DOT_SNTP_CLIENT=ON"
-    "-DOT_UDP_FORWARD=ON"
-)
-
-readonly OT_nrf52840_OPTIONS=("${OT_nrf52833_OPTIONS[@]:0}")
-
 die()
 {
     echo " ** ERROR: $1"
@@ -117,7 +91,7 @@ main()
 
     case "${platform}" in
         nrf52811)
-            local_options+=("${OT_nrf52811_OPTIONS[@]}" "-DCMAKE_TOOLCHAIN_FILE=src/${platform}/arm-none-eabi.cmake")
+            local_options+=("-DCMAKE_TOOLCHAIN_FILE=src/${platform}/arm-none-eabi.cmake")
             case "${nrf_build_type}" in
                 UART_trans)
                     OT_CMAKE_NINJA_TARGET=("ot-cli-mtd" "ot-rcp")
@@ -130,7 +104,7 @@ main()
             esac
             ;;
         nrf52833)
-            local_options+=("${OT_nrf52833_OPTIONS[@]}" "-DCMAKE_TOOLCHAIN_FILE=src/${platform}/arm-none-eabi.cmake")
+            local_options+=("-DCMAKE_TOOLCHAIN_FILE=src/${platform}/arm-none-eabi.cmake")
             case "${nrf_build_type}" in
                 UART_trans)
                     options+=("${local_options[@]}")
@@ -145,7 +119,7 @@ main()
             esac
             ;;
         nrf52840)
-            local_options+=("${OT_nrf52840_OPTIONS[@]}" "-DCMAKE_TOOLCHAIN_FILE=src/${platform}/arm-none-eabi.cmake")
+            local_options+=("-DCMAKE_TOOLCHAIN_FILE=src/${platform}/arm-none-eabi.cmake")
             case "${nrf_build_type}" in
                 UART_trans)
                     options+=("${local_options[@]}" "-DOT_EXTERNAL_MBEDTLS=nordicsemi-mbedtls")
