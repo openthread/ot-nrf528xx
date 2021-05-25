@@ -1370,20 +1370,16 @@ static void updateIeData(otInstance *aInstance, otShortAddress aShortAddr, const
 #endif // OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE || OPENTHREAD_CONFIG_MLE_LINK_METRICS_ENABLE
 
 #if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
-otError otPlatRadioEnableCsl(otInstance *aInstance, uint32_t aCslPeriod, const otExtAddress *aExtAddr)
+otError otPlatRadioEnableCsl(otInstance *        aInstance,
+                             uint32_t            aCslPeriod,
+                             otShortAddress      aShortAddr,
+                             const otExtAddress *aExtAddr)
 {
-    otError        error = OT_ERROR_NONE;
-    otShortAddress shortAddress;
-
     sCslPeriod = aCslPeriod;
 
-    shortAddress = nrf_802154_pib_short_address_get()[1]
-                   << 8; // Don't need the other byte because this is parent's short address
-    shortAddress &= 0xfc00;
+    updateIeData(aInstance, aShortAddr, aExtAddr);
 
-    updateIeData(aInstance, shortAddress, aExtAddr);
-
-    return error;
+    return OT_ERROR_NONE;
 }
 
 void otPlatRadioUpdateCslSampleTime(otInstance *aInstance, uint32_t aCslSampleTime)
