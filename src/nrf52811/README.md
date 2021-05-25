@@ -18,6 +18,12 @@ You can use examples for nRF52811 on nRF52840 without any changes in the generat
 
 ## Prerequisites
 
+After cloning the repo, you must initialize the git submodule.
+
+```
+$ git submodule update --init
+```
+
 Before you start building the examples, you must download and install the toolchain and the tools required for flashing and debugging.
 
 ### Toolchain
