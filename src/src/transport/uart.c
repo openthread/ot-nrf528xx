@@ -141,15 +141,6 @@ exit:
     return;
 }
 
-otError otPlatUartFlush(void)
-{
-    while (sTransmitBuffer && !sTransmitDone)
-    {
-        // Wait until the transmission is done
-    }
-    return OT_ERROR_NONE;
-}
-
 /**
  * Function for notifying application about transmission being done.
  */
@@ -167,6 +158,18 @@ static void processTransmit(void)
 
 exit:
     return;
+}
+
+otError otPlatUartFlush(void)
+{
+    while (sTransmitBuffer && !sTransmitDone)
+    {
+        // Wait until the transmission is done
+    }
+
+    processTransmit();
+
+    return OT_ERROR_NONE;
 }
 
 void nrf5UartProcess(void)
