@@ -195,7 +195,7 @@ To test the example:
    Channel Mask: 0x07fff800
    Ext PAN ID: d63e8e3e495ebbc3
    Mesh Local Prefix: fd3d:b50b:f96d:722d::/64
-   Master Key: dfd34f0f05cad978ec4e32b0413038ff
+   Network Key: dfd34f0f05cad978ec4e32b0413038ff
    Network Name: OpenThread-8f28
    PAN ID: 0x8f28
    PSKc: c23a76e98f1a6483639b1ac1271e2e27
@@ -219,7 +219,7 @@ To test the example:
 4. Use the following commands to attach to the network on the second board.
 
    ```bash
-   > dataset masterkey dfd34f0f05cad978ec4e32b0413038ff
+   > dataset networkkey dfd34f0f05cad978ec4e32b0413038ff
    Done
    > dataset commit active
    Done
