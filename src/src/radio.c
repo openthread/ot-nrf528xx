@@ -196,7 +196,7 @@ static void convertShortAddress(uint8_t *aTo, uint16_t aFrom)
     aTo[1] = (uint8_t)(aFrom >> 8);
 }
 
-#if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE || OPENTHREAD_CONFIG_MLE_LINK_METRICS_ENABLE
+#if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE || OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
 static void convertExtAddress(uint8_t *aTo, const otExtAddress *aFrom)
 {
     for (uint8_t i = 0; i < sizeof(otExtAddress); i++)
@@ -1107,7 +1107,7 @@ static uint16_t getCslPhase()
 void nrf_802154_tx_ack_started(uint8_t *p_data, int8_t power, uint8_t lqi)
 {
     otRadioFrame ackFrame;
-#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_ENABLE
+#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
     uint8_t      linkMetricsDataLen = 0;
     uint8_t      linkMetricsData[OT_ENH_PROBING_IE_DATA_MAX_SIZE];
     otMacAddress macAddress;
@@ -1133,7 +1133,7 @@ void nrf_802154_tx_ack_started(uint8_t *p_data, int8_t power, uint8_t lqi)
     }
 #endif
 
-#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_ENABLE
+#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
     otMacFrameGetDstAddr(&ackFrame, &macAddress);
     if ((linkMetricsDataLen = otLinkMetricsEnhAckGenData(&macAddress, lqi, power, linkMetricsData)) > 0)
     {
@@ -1322,7 +1322,7 @@ void otPlatRadioSetMacFrameCounter(otInstance *aInstance, uint32_t aMacFrameCoun
 }
 #endif // OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
 
-#if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE || OPENTHREAD_CONFIG_MLE_LINK_METRICS_ENABLE
+#if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE || OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
 static void updateIeData(otInstance *aInstance, otShortAddress aShortAddr, const otExtAddress *aExtAddr)
 {
     OT_UNUSED_VARIABLE(aInstance);
@@ -1331,7 +1331,7 @@ static void updateIeData(otInstance *aInstance, otShortAddress aShortAddr, const
     uint8_t ackIeData[OT_ACK_IE_MAX_SIZE];
     uint8_t extAddr[OT_EXT_ADDRESS_SIZE];
     uint8_t shortAddr[SHORT_ADDRESS_SIZE];
-#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_ENABLE
+#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
     uint8_t      enhAckProbingDataLen = 0;
     otMacAddress macAddress;
     macAddress.mType                  = OT_MAC_ADDRESS_TYPE_SHORT;
@@ -1346,7 +1346,7 @@ static void updateIeData(otInstance *aInstance, otShortAddress aShortAddr, const
     }
 #endif
 
-#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_ENABLE
+#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
     if ((enhAckProbingDataLen = otLinkMetricsEnhAckGetDataLen(&macAddress)) > 0)
     {
         offset += otMacFrameGenerateEnhAckProbingIe(ackIeData + offset, NULL, enhAckProbingDataLen);
@@ -1367,7 +1367,7 @@ static void updateIeData(otInstance *aInstance, otShortAddress aShortAddr, const
         nrf_802154_ack_data_clear(extAddr, true, NRF_802154_ACK_DATA_IE);
     }
 }
-#endif // OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE || OPENTHREAD_CONFIG_MLE_LINK_METRICS_ENABLE
+#endif // OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE || OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
 
 #if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
 otError otPlatRadioEnableCsl(otInstance *        aInstance,
@@ -1397,7 +1397,7 @@ uint8_t otPlatRadioGetCslAccuracy(otInstance *aInstance)
 }
 #endif // OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
 
-#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_ENABLE
+#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
 otError otPlatRadioConfigureEnhAckProbing(otInstance *         aInstance,
                                           otLinkMetrics        aLinkMetrics,
                                           const otShortAddress aShortAddress,
