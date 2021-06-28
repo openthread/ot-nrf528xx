@@ -43,7 +43,6 @@
 
 #include <openthread/link.h>
 
-#include "common/code_utils.hpp"
 #include "utils/code_utils.h"
 #include "utils/link_metrics.h"
 #include "utils/mac_frame.h"
@@ -155,7 +154,7 @@ static int8_t GetTransmitPowerForChannel(uint8_t aChannel)
 
     if (sDefaultTxPower != OT_RADIO_POWER_INVALID)
     {
-        power = OT_MIN(channelMaxPower, sDefaultTxPower);
+        power = (channelMaxPower < sDefaultTxPower) ? channelMaxPower : sDefaultTxPower;
     }
     else if (channelMaxPower != OT_RADIO_POWER_INVALID)
     {
@@ -182,7 +181,7 @@ static void dataInit(void)
         sReceivedFrames[i].mPsdu = NULL;
     }
 
-    for (size_t i = 0; i < OT_ARRAY_LENGTH(sMaxTxPowerTable); i++)
+    for (size_t i = 0; i < otARRAY_LENGTH(sMaxTxPowerTable); i++)
     {
         sMaxTxPowerTable[i] = OT_RADIO_POWER_INVALID;
     }
@@ -755,7 +754,7 @@ otError otPlatRadioSetTransmitPower(otInstance *aInstance, int8_t aPower)
     uint8_t channel = nrf_802154_channel_get();
     otError error   = OT_ERROR_NONE;
 
-    VerifyOrExit(aPower != OT_RADIO_POWER_INVALID, error = OT_ERROR_INVALID_ARGS);
+    otEXPECT_ACTION(aPower != OT_RADIO_POWER_INVALID, error = OT_ERROR_INVALID_ARGS);
     sDefaultTxPower = aPower;
     nrf_802154_tx_power_set(GetTransmitPowerForChannel(channel));
 
@@ -1410,7 +1409,8 @@ otError otPlatRadioConfigureEnhAckProbing(otInstance *         aInstance,
 
     otError error = OT_ERROR_NONE;
 
-    SuccessOrExit(error = otLinkMetricsConfigureEnhAckProbing(aShortAddress, aExtAddress, aLinkMetrics));
+    error = otLinkMetricsConfigureEnhAckProbing(aShortAddress, aExtAddress, aLinkMetrics);
+    otEXPECT(error == OT_ERROR_NONE);
     updateIeData(aInstance, aShortAddress, aExtAddress);
 
 exit:
@@ -1466,7 +1466,7 @@ otError otPlatRadioGetRegion(otInstance *aInstance, uint16_t *aRegionCode)
     OT_UNUSED_VARIABLE(aInstance);
     otError error = OT_ERROR_NONE;
 
-    VerifyOrExit(aRegionCode != NULL, error = OT_ERROR_INVALID_ARGS);
+    otEXPECT_ACTION(aRegionCode != NULL, error = OT_ERROR_INVALID_ARGS);
 
     *aRegionCode = sRegionCode;
 exit:
