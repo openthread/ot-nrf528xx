@@ -33,6 +33,10 @@
 
 #ifdef NRF_802154_PROJECT_CONFIG
 #include NRF_802154_PROJECT_CONFIG
+#elif defined(NRF_802154_USER_CONFIG)
+// This configuration header file should be provided by the user when
+// NRF_802154_USER_CONFIG is defined to 1.
+#include "nrf_802154_user_config.h"
 #endif
 
 #include <nrf.h>
