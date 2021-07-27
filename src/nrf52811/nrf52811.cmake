@@ -57,6 +57,10 @@ if(OT_CFLAGS MATCHES "-pedantic-errors")
     string(REPLACE "-pedantic-errors" "" OT_CFLAGS "${OT_CFLAGS}")
 endif()
 
+set(OT_UART_BAUDRATE 115200 CACHE STRING "UART Baud rate. It must be a pre-defined
+value in src/nrf52811/transport-config.h")
+add_definitions(-DUART_BAUDRATE=NRF_UARTE_BAUDRATE_${OT_UART_BAUDRATE})
+
 add_library(openthread-nrf52811
     ${NRF_COMM_SOURCES}
     ${NRF_SINGLEPHY_SOURCES}
