@@ -1221,7 +1221,7 @@ void nrf_802154_tx_started(const uint8_t *aFrame)
     OT_UNUSED_VARIABLE(aFrame);
 
 #if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
-    if (sCslPeriod > 0)
+    if ((sCslPeriod > 0) && !sTransmitFrame.mInfo.mTxInfo.mIsARetx)
     {
         otMacFrameSetCslIe(&sTransmitFrame, (uint16_t)sCslPeriod, getCslPhase());
     }
