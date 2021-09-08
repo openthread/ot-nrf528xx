@@ -137,14 +137,14 @@ typedef enum
 static uint32_t sPendingEvents;
 
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
-static uint32_t        sMacFrameCounter;
-static uint8_t         sKeyId;
-static struct otMacKey sPrevKey;
-static struct otMacKey sCurrKey;
-static struct otMacKey sNextKey;
-static bool            sAckedWithSecEnhAck;
-static uint32_t        sAckFrameCounter;
-static uint8_t         sAckKeyId;
+static uint32_t         sMacFrameCounter;
+static uint8_t          sKeyId;
+static otMacKeyMaterial sPrevKey;
+static otMacKeyMaterial sCurrKey;
+static otMacKeyMaterial sNextKey;
+static bool             sAckedWithSecEnhAck;
+static uint32_t         sAckFrameCounter;
+static uint8_t          sAckKeyId;
 #endif
 
 static int8_t GetTransmitPowerForChannel(uint8_t aChannel)
@@ -254,9 +254,9 @@ static inline void clearPendingEvents(void)
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
 static void txAckProcessSecurity(uint8_t *aAckFrame)
 {
-    otRadioFrame     ackFrame;
-    struct otMacKey *key = NULL;
-    uint8_t          keyId;
+    otRadioFrame      ackFrame;
+    otMacKeyMaterial *key = NULL;
+    uint8_t           keyId;
 
     sAckedWithSecEnhAck = false;
     otEXPECT(aAckFrame[SECURITY_ENABLED_OFFSET] & SECURITY_ENABLED_BIT);
@@ -1287,24 +1287,26 @@ uint64_t otPlatRadioGetNow(otInstance *aInstance)
 }
 
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
-void otPlatRadioSetMacKey(otInstance *    aInstance,
-                          uint8_t         aKeyIdMode,
-                          uint8_t         aKeyId,
-                          const otMacKey *aPrevKey,
-                          const otMacKey *aCurrKey,
-                          const otMacKey *aNextKey)
+void otPlatRadioSetMacKey(otInstance *            aInstance,
+                          uint8_t                 aKeyIdMode,
+                          uint8_t                 aKeyId,
+                          const otMacKeyMaterial *aPrevKey,
+                          const otMacKeyMaterial *aCurrKey,
+                          const otMacKeyMaterial *aNextKey,
+                          otRadioKeyType          aKeyType)
 {
     OT_UNUSED_VARIABLE(aInstance);
     OT_UNUSED_VARIABLE(aKeyIdMode);
 
+    assert(aKeyType == OT_KEY_TYPE_LITERAL_KEY);
     assert(aPrevKey != NULL && aCurrKey != NULL && aNextKey != NULL);
 
     CRITICAL_REGION_ENTER();
 
-    sKeyId = aKeyId;
-    memcpy(sPrevKey.m8, aPrevKey->m8, OT_MAC_KEY_SIZE);
-    memcpy(sCurrKey.m8, aCurrKey->m8, OT_MAC_KEY_SIZE);
-    memcpy(sNextKey.m8, aNextKey->m8, OT_MAC_KEY_SIZE);
+    sKeyId   = aKeyId;
+    sPrevKey = *aPrevKey;
+    sCurrKey = *aCurrKey;
+    sNextKey = *aNextKey;
 
     CRITICAL_REGION_EXIT();
 }
