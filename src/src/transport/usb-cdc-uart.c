@@ -366,7 +366,14 @@ exit:
 
 otError otPlatUartFlush(void)
 {
-    return OT_ERROR_NOT_IMPLEMENTED;
+    while (sUsbState.mTransferInProgress && !sUsbState.mTransferDone)
+    {
+        // Wait until the transmission is done
+    }
+
+    processTransmit();
+
+    return OT_ERROR_NONE;
 }
 
 #endif // USB_CDC_AS_SERIAL_TRANSPORT == 1
