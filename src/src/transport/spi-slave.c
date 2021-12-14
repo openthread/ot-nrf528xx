@@ -79,7 +79,7 @@ static void spisEventHandler(nrfx_spis_evt_t const *aEvent, void *aContext)
 
         // Execute application callback.
         if (sCompleteCallback(sContext, aEvent->tx_buffer, aEvent->tx_buffer_size, aEvent->rx_buffer,
-                              aEvent->rx_buffer_size, aEvent->rx_amount))
+                              aEvent->rx_buffer_size, MAX(aEvent->rx_amount, aEvent->tx_amount)))
         {
             // Further processing is required.
             sFurtherProcessingFlag = true;
