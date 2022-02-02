@@ -2,6 +2,10 @@
 
 This directory contains example platform drivers for [Nordic Semiconductor nRF52833 SoC][nrf52833].
 
+> Note: For new projects, you should use [nRF Connect SDK][nrf-connect]. nRF5 SDK for Thread and Zigbee is a legacy solution and only provided in maintenance mode.
+
+[nrf-connect]: https://www.nordicsemi.com/Products/Development-software/nRF-Connect-SDK
+
 To facilitate Thread products development with the nRF52833 platform, Nordic Semiconductor provides <i>nRF5 SDK for Thread and Zigbee</i>. See [Nordic Semiconductor's nRF5 SDK for Thread and Zigbee][nrf5-sdk-section] section for more details.
 
 [nrf52833]: https://www.nordicsemi.com/Products/Low-power-short-range-wireless/nRF52833
@@ -390,6 +394,10 @@ The radio driver comes with documentation that describes the operation of state 
 [plantuml-url]: http://plantuml.com/
 
 # Nordic Semiconductor's nRF5 SDK for Thread and Zigbee
+
+> Note: For new projects, you should use [nRF Connect SDK][nrf-connect]. nRF5 SDK for Thread and Zigbee is only provided in maintenance mode. While bare metal Thread samples are still maintained, there will not be new SDK releases.
+
+[nrf-connect]: https://www.nordicsemi.com/Products/Development-software/nRF-Connect-SDK
 
 Use [nRF5 Software Development Kit (SDK) for Thread and Zigbee][nrf5-sdk-thread-zigbee] when developing Thread products with Nordic Semiconductor's advanced nRF52840, nRF52833 or nRF52811 SoCs.
 
