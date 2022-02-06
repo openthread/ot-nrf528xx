@@ -60,6 +60,28 @@ After a successful build, the `elf` files can be found in `<path-to-ot-nrf528xx>
 $ arm-none-eabi-objcopy -O ihex build/bin/ot-cli-ftd ot-cli-ftd.hex
 ```
 
+### Alternative build using Docker
+
+Alternatively, it's possible to build using a Docker image.
+
+This can be useful in case of CI/CD builds or to build locally without installing the dependencies.
+
+Example for the nRF52840 dongle:
+
+```bash
+cd <path-to-ot-nrf528xx>
+docker run --rm -u $(id -u):$(id -g) -v $(pwd):/workdir/project coderbyheart/fw-nrfconnect-nrf-docker:v1.8-branch ./script/build nrf52840 USB_trans -DOT_BOOTLOADER=USB -DOT_THREAD_VERSION=1.2
+```
+
+Then `elf` files can be converted through the same container image.
+
+For example:
+
+```bash
+cd <path-to-ot-nrf528xx>
+docker run --rm -u $(id -u):$(id -g) -v $(pwd):/workdir/project coderbyheart/fw-nrfconnect-nrf-docker:v1.8-branch arm-none-eabi-objcopy -O ihex build/bin/ot-rcp build/bin/ot-rcp.hex
+```
+
 ### USB CDC ACM support
 
 You can build the libraries with support for the native USB CDC ACM as a serial transport. To do so, build the firmware with the following parameter:
