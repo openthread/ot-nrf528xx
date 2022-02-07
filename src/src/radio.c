@@ -80,6 +80,8 @@
 #define RSSI_SETTLE_TIME_US   40           ///< RSSI settle time in microseconds.
 #define SAFE_DELTA            1000         ///< A safe value for the `dt` parameter of delayed operations.
 
+#define RSSI_MIN              (-128)       ///< Minimum value of RSSI.
+
 #if defined(__ICCARM__)
 _Pragma("diag_suppress=Pe167")
 #endif
@@ -1006,9 +1008,14 @@ void nrf_802154_received_timestamp_raw(uint8_t *p_data, int8_t power, uint8_t lq
 
     receivedFrame->mPsdu               = &p_data[1];
     receivedFrame->mLength             = p_data[0];
-    receivedFrame->mInfo.mRxInfo.mRssi = power;
+    receivedFrame->mInfo.mRxInfo.mRssi = power + sLnaGain;
     receivedFrame->mInfo.mRxInfo.mLqi  = lqi;
     receivedFrame->mChannel            = nrf_802154_channel_get();
+
+    if (receivedFrame->mInfo.mRxInfo.mRssi > 0)
+    {
+        receivedFrame->mInfo.mRxInfo.mRssi = RSSI_MIN;
+    }
 
     // Inform if this frame was acknowledged with frame pending set.
     if (p_data[ACK_REQUEST_OFFSET] & ACK_REQUEST_BIT)
