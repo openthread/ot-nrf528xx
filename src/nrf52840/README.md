@@ -73,7 +73,7 @@ cd <path-to-ot-nrf528xx>
 docker run --rm -u $(id -u):$(id -g) -v $(pwd):/workdir/project coderbyheart/fw-nrfconnect-nrf-docker:v1.8-branch ./script/build nrf52840 USB_trans -DOT_BOOTLOADER=USB -DOT_THREAD_VERSION=1.2
 ```
 
-Then `elf` files can be converted through the same container image.
+After a successful build, the `elf` files can be converted through the same container image.
 
 For example:
 
