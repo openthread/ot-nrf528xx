@@ -82,6 +82,9 @@ cd <path-to-ot-nrf528xx>
 docker run --rm -u $(id -u):$(id -g) -v $(pwd):/workdir/project coderbyheart/fw-nrfconnect-nrf-docker:v1.8-branch arm-none-eabi-objcopy -O ihex build/bin/ot-rcp build/bin/ot-rcp.hex
 ```
 
+General instructions on using this Docker image to build an nRF Connect SDK based application can be found through this link:
+https://devzone.nordicsemi.com/guides/nrf-connect-sdk-guides/b/getting-started/posts/build-ncs-application-firmware-images-using-docker
+
 ### USB CDC ACM support
 
 You can build the libraries with support for the native USB CDC ACM as a serial transport. To do so, build the firmware with the following parameter:
