@@ -62,7 +62,7 @@ $ arm-none-eabi-objcopy -O ihex build/bin/ot-cli-ftd ot-cli-ftd.hex
 
 ### Building using Docker
 
-Alternatively, it's possible to build using a Docker image.
+Alternatively, you can build using a Docker image instead of nRF Command Line Tools.
 
 This can be useful in case of CI/CD builds or to build locally without installing the dependencies.
 
