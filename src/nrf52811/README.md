@@ -110,7 +110,7 @@ Example for building the firmware with UART support:
 
 ```bash
 cd <path-to-ot-nrf528xx>
-docker run --rm -u $(id -u):$(id -g) -v $(pwd):/workdir/project coderbyheart/fw-nrfconnect-nrf-docker:v1.8-branch ./script/build nrf52811 USB_trans -DOT_THREAD_VERSION=1.2
+docker run --rm -u $(id -u):$(id -g) -v $(pwd):/workdir/project coderbyheart/fw-nrfconnect-nrf-docker:v1.8-branch ./script/build nrf52811 UART_trans -DOT_THREAD_VERSION=1.2
 ```
 
 After a successful build, the `elf` files can be converted through the same container image.
