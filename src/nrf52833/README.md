@@ -61,7 +61,7 @@ Alternatively, you can build using a Docker image instead of nRF Command Line To
 
 This can be useful in case of CI/CD builds or to build locally without installing the dependencies.
 
-Example for building the firmware with UART support:
+Example for building the firmware with USB CDC ACM support:
 
 ```bash
 cd <path-to-ot-nrf528xx>
