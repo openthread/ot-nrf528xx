@@ -60,7 +60,7 @@ After a successful build, the `elf` files can be found in `<path-to-ot-nrf528xx>
 $ arm-none-eabi-objcopy -O ihex build/bin/ot-cli-ftd ot-cli-ftd.hex
 ```
 
-### Alternative build using Docker
+### Building using Docker
 
 Alternatively, it's possible to build using a Docker image.
 
