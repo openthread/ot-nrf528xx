@@ -343,8 +343,10 @@ otError otPlatUartDisable(void)
 otError otPlatUartSend(const uint8_t *aBuf, uint16_t aBufLength)
 {
     otError error = OT_ERROR_NONE;
-
-    otEXPECT_ACTION(sUsbState.mTransferInProgress == false, error = OT_ERROR_BUSY);
+    if (sUsbState.mTransferInProgress == true)
+    {
+        otPlatUartFlush();
+    }
     otEXPECT_ACTION(sUsbState.mTxBuffer == NULL, error = OT_ERROR_BUSY);
 
     if (!isPortOpened())
@@ -369,6 +371,11 @@ otError otPlatUartFlush(void)
     while (sUsbState.mTransferInProgress && !sUsbState.mTransferDone)
     {
         // Wait until the transmission is done
+        while (app_usbd_event_queue_process())
+        {
+        }
+        processConnection();
+        processTransmit();
     }
 
     processTransmit();
