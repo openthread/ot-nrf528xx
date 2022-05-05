@@ -80,6 +80,8 @@
 #define RSSI_SETTLE_TIME_US   40           ///< RSSI settle time in microseconds.
 #define SAFE_DELTA            1000         ///< A safe value for the `dt` parameter of delayed operations.
 
+#define CSL_UNCERT            20           ///< The Uncertainty of the scheduling CSL of transmission by the parent, in ±10 us units.
+
 #if defined(__ICCARM__)
 _Pragma("diag_suppress=Pe167")
 #endif
@@ -1396,6 +1398,14 @@ uint8_t otPlatRadioGetCslAccuracy(otInstance *aInstance)
 
     return otPlatTimeGetXtalAccuracy() / 2;
 }
+
+uint8_t otPlatRadioGetCslClockUncertainty(otInstance *aInstance)
+{
+    OT_UNUSED_VARIABLE(aInstance);
+
+    return CSL_UNCERT;
+}
+
 #endif // OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
 
 #if OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
