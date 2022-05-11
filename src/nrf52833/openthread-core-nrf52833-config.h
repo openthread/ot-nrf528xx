@@ -309,16 +309,6 @@
 #define OPENTHREAD_CONFIG_CSL_MIN_RECEIVE_ON 12 * 16
 #endif
 
-/**
- * @def OPENTHREAD_CONFIG_PLATFORM_CSL_UNCERT
- *
- * The Uncertainty of the scheduling CSL of transmission by the parent, in ±10 us units.
- *
- */
-#ifndef OPENTHREAD_CONFIG_PLATFORM_CSL_UNCERT
-#define OPENTHREAD_CONFIG_PLATFORM_CSL_UNCERT 20
-#endif
-
 /*
  * Suppress the ARMCC warning on unreachable statement,
  * e.g. break after assert(false) or ExitNow() macro.
