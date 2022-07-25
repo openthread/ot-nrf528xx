@@ -103,6 +103,7 @@ void otSysInit(int argc, char *argv[])
     nrf5RadioInit();
     nrf5TempInit();
     nrf5FemInit();
+    nrf5CryptoInit();
 
     gPlatformPseudoResetWasRequested = false;
 }
