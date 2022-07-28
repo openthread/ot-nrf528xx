@@ -39,6 +39,7 @@ endif()
 
 set(NRF_COMM_SOURCES
     src/alarm.c
+    src/crypto.c
     src/diag.c
     src/entropy.c
     src/fem.c
