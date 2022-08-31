@@ -164,12 +164,6 @@ otError nrf5FlashWrite(uint32_t aAddress, const uint8_t *aData, uint32_t aSize);
 void nrf5TempInit(void);
 
 /**
- * Initialization of crypto module.
- *
- */
-void nrf5CryptoInit(void);
-
-/**
  * Deinitialization of temperature controller.
  *
  */

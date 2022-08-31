@@ -51,27 +51,34 @@ bool nrf_ecb_init(void)
 
 bool nrf_ecb_crypt(uint8_t * dest_buf, const uint8_t * src_buf)
 {
+   bool     retval  = true;
    uint32_t counter = 0x1000000;
    if (src_buf != ecb_cleartext)
    {
      memcpy(ecb_cleartext,src_buf,16);
    }
    NRF_ECB->EVENTS_ENDECB = 0;
+   NRFX_CRITICAL_SECTION_ENTER();
    NRF_ECB->TASKS_STARTECB = 1;
    while (NRF_ECB->EVENTS_ENDECB == 0)
    {
     counter--;
     if (counter == 0)
     {
-      return false;
+      retval = false;
+      break;
     }
    }
-   NRF_ECB->EVENTS_ENDECB = 0;
-   if (dest_buf != ecb_ciphertext)
+   NRFX_CRITICAL_SECTION_EXIT();
+   if (retval)
    {
-     memcpy(dest_buf,ecb_ciphertext,16);
+    NRF_ECB->EVENTS_ENDECB = 0;
+    if (dest_buf != ecb_ciphertext)
+    {
+      memcpy(dest_buf,ecb_ciphertext,16);
+    }
    }
-   return true;
+   return retval;
 }
 
 void nrf_ecb_set_key(const uint8_t * key)
