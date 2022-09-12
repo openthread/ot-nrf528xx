@@ -493,6 +493,13 @@ void nrf5AlarmProcess(otInstance *aInstance)
     {
         sEventPending = false;
 
+        if (sTimerData[kUsTimer].mFireAlarm)
+        {
+            sTimerData[kUsTimer].mFireAlarm = false;
+
+            otPlatAlarmMicroFired(aInstance);
+        }
+
         if (sTimerData[kMsTimer].mFireAlarm)
         {
             sTimerData[kMsTimer].mFireAlarm = false;
@@ -510,12 +517,6 @@ void nrf5AlarmProcess(otInstance *aInstance)
             }
         }
 
-        if (sTimerData[kUsTimer].mFireAlarm)
-        {
-            sTimerData[kUsTimer].mFireAlarm = false;
-
-            otPlatAlarmMicroFired(aInstance);
-        }
     } while (sEventPending);
 }
 
