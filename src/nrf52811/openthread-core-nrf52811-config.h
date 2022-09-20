@@ -257,6 +257,16 @@
 #define OPENTHREAD_CONFIG_CSL_MIN_RECEIVE_ON 12 * 16
 #endif
 
+/**
+ * @def OPENTHREAD_CONFIG_TCP_ENABLE
+ *
+ * Define as 1 to enable TCP.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_TCP_ENABLE
+#define OPENTHREAD_CONFIG_TCP_ENABLE 0
+#endif
+
 /*
  * Suppress the ARMCC warning on unreachable statement,
  * e.g. break after assert(false) or ExitNow() macro.
