@@ -1,6 +1,8 @@
 /*
- * Copyright (c) 2013 - 2019, Nordic Semiconductor ASA
+ * Copyright (c) 2013 - 2021, Nordic Semiconductor ASA
  * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -335,14 +337,12 @@ static void spis_state_entry_action_execute(NRF_SPIS_Type * p_spis,
 
         case SPIS_XFER_COMPLETED:
             event.evt_type  = NRFX_SPIS_XFER_DONE;
-            event.tx_buffer = nrf_spis_tx_buffer_get(p_spis, &event.tx_buffer_size);
-            event.rx_buffer = nrf_spis_rx_buffer_get(p_spis, &event.rx_buffer_size);
             event.rx_amount = nrf_spis_rx_amount_get(p_spis);
             event.tx_amount = nrf_spis_tx_amount_get(p_spis);
             NRFX_LOG_INFO("Transfer rx_len:%d.", event.rx_amount);
             NRFX_LOG_DEBUG("Rx data:");
-            NRFX_LOG_HEXDUMP_DEBUG((uint8_t const *)event.rx_buffer,
-                                   event.rx_amount * sizeof(event.rx_buffer[0]));
+            NRFX_LOG_HEXDUMP_DEBUG((uint8_t const *)p_cb->rx_buffer,
+                                   event.rx_amount * sizeof(p_cb->rx_buffer[0]));
             NRFX_ASSERT(p_cb->handler != NULL);
             p_cb->handler(&event, p_cb->p_context);
             break;
@@ -430,41 +430,8 @@ static void spis_irq_handler(NRF_SPIS_Type * p_spis, spis_cb_t * p_cb)
 {
     // @note: as multiple events can be pending for processing, the correct event processing order
     // is as follows:
-    // - SPI transaction complete event.
     // - SPI semaphore acquired event.
-
-    // Check for SPI transaction complete event.
-    if (nrf_spis_event_check(p_spis, NRF_SPIS_EVENT_END))
-    {
-        nrfx_spis_evt_t event;
-        nrf_spis_event_clear(p_spis, NRF_SPIS_EVENT_END);
-        NRFX_LOG_DEBUG("SPIS: Event: %s.", EVT_TO_STR(NRF_SPIS_EVENT_END));
-
-        switch (p_cb->spi_state)
-        {
-            case SPIS_BUFFER_RESOURCE_CONFIGURED:
-                spis_state_change(p_spis, p_cb, SPIS_XFER_COMPLETED);
-                break;
-
-            case SPIS_BUFFER_RESOURCE_REQUESTED:
-                event.evt_type  = NRFX_SPIS_XFER_DONE;
-                event.tx_buffer = nrf_spis_tx_buffer_get(p_spis, &event.tx_buffer_size);
-                event.rx_buffer = nrf_spis_rx_buffer_get(p_spis, &event.rx_buffer_size);
-                event.rx_amount = nrf_spis_rx_amount_get(p_spis);
-                event.tx_amount = nrf_spis_tx_amount_get(p_spis);
-                NRFX_LOG_INFO("Transfer rx_len:%d.", event.rx_amount);
-                NRFX_LOG_DEBUG("Rx data:");
-                NRFX_LOG_HEXDUMP_DEBUG((uint8_t const *)event.rx_buffer,
-                                       event.rx_amount * sizeof(event.rx_buffer[0]));
-                NRFX_ASSERT(p_cb->handler != NULL);
-                p_cb->handler(&event, p_cb->p_context);
-                break;
-
-            default:
-                // No implementation required.
-                break;
-        }
-    }
+    // - SPI transaction complete event.
 
     // Check for SPI semaphore acquired event.
     if (nrf_spis_event_check(p_spis, NRF_SPIS_EVENT_ACQUIRED))
@@ -481,6 +448,24 @@ static void spis_irq_handler(NRF_SPIS_Type * p_spis, spis_cb_t * p_cb)
                 nrf_spis_task_trigger(p_spis, NRF_SPIS_TASK_RELEASE);
 
                 spis_state_change(p_spis, p_cb, SPIS_BUFFER_RESOURCE_CONFIGURED);
+                break;
+
+            default:
+                // No implementation required.
+                break;
+        }
+    }
+
+    // Check for SPI transaction complete event.
+    if (nrf_spis_event_check(p_spis, NRF_SPIS_EVENT_END))
+    {
+        nrf_spis_event_clear(p_spis, NRF_SPIS_EVENT_END);
+        NRFX_LOG_DEBUG("SPIS: Event: %s.", EVT_TO_STR(NRF_SPIS_EVENT_END));
+
+        switch (p_cb->spi_state)
+        {
+            case SPIS_BUFFER_RESOURCE_CONFIGURED:
+                spis_state_change(p_spis, p_cb, SPIS_XFER_COMPLETED);
                 break;
 
             default:
