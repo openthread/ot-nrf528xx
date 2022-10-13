@@ -1,6 +1,8 @@
 /*
- * Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
+ * Copyright (c) 2015 - 2021, Nordic Semiconductor ASA
  * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -352,6 +354,15 @@ __STATIC_INLINE void nrf_twim_shorts_set(NRF_TWIM_Type * p_reg,
                                          uint32_t        mask);
 
 /**
+ * @brief Function for getting the shortcut setting.
+ *
+ * @param[in] p_reg Pointer to the structure of registers of the peripheral.
+ *
+ * @return Current shortcut configuration.
+ */
+__STATIC_INLINE uint32_t nrf_twim_shorts_get(NRF_TWIM_Type const * p_reg);
+
+/**
  * @brief Function for getting the amount of transmitted bytes.
  *
  * @param[in] p_reg Pointer to the structure of registers of the peripheral.
@@ -559,6 +570,11 @@ __STATIC_INLINE void nrf_twim_shorts_set(NRF_TWIM_Type * p_reg,
 __STATIC_INLINE size_t nrf_twim_txd_amount_get(NRF_TWIM_Type * p_reg)
 {
     return p_reg->TXD.AMOUNT;
+}
+
+__STATIC_INLINE uint32_t nrf_twim_shorts_get(NRF_TWIM_Type const * p_reg)
+{
+    return p_reg->SHORTS;
 }
 
 __STATIC_INLINE size_t nrf_twim_rxd_amount_get(NRF_TWIM_Type * p_reg)
