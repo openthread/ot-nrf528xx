@@ -1,6 +1,8 @@
 /*
- * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2021, Nordic Semiconductor ASA
  * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -123,12 +125,16 @@ __STATIC_INLINE uint32_t nrf_ficr_nfc_tagheader_get(NRF_FICR_Type const * p_reg,
     switch(tagheader_id) {
         case 0:
             return p_reg->NFC.TAGHEADER0;
+            break;
         case 1:
             return p_reg->NFC.TAGHEADER1;
+            break;
         case 2:
             return p_reg->NFC.TAGHEADER2;
+            break;
         case 3:
             return p_reg->NFC.TAGHEADER3;
+            break;
         default:
             return 0;
     }

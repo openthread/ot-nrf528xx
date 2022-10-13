@@ -1,6 +1,8 @@
 /*
- * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2021, Nordic Semiconductor ASA
  * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -164,6 +166,9 @@ typedef struct
  * @brief Callback descriptor to pass events from the NFCT driver to the upper layer.
  *
  * @param[in] p_event Pointer to the event descriptor.
+ *
+ * @note @ref NRFX_NFCT_EVT_FIELD_DETECTED and @ref NRFX_NFCT_EVT_FIELD_LOST are generated only on field state transitions,
+ *       i.e. there will be no multiple events of the same type (out of the 2 mentioned) coming in a row.
  */
 typedef void (*nrfx_nfct_handler_t)(nrfx_nfct_evt_t const * p_event);
 
@@ -229,6 +234,7 @@ void nrfx_nfct_rx(nrfx_nfct_data_desc_t const * p_rx_data);
  *
  * @retval NRFX_SUCCESS              The operation was successful.
  * @retval NRFX_ERROR_INVALID_LENGTH The TX buffer size is invalid.
+ * @retval NRFX_ERROR_BUSY           Driver is already transferring.
  */
 nrfx_err_t nrfx_nfct_tx(nrfx_nfct_data_desc_t const * p_tx_data,
                         nrf_nfct_frame_delay_mode_t   delay_mode);

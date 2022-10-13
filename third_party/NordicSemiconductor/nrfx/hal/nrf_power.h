@@ -1,6 +1,8 @@
 /*
- * Copyright (c) 2017 - 2019, Nordic Semiconductor ASA
+ * Copyright (c) 2017 - 2021, Nordic Semiconductor ASA
  * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -176,8 +178,12 @@ typedef enum
 {
     NRF_POWER_RAMBLOCK0 = POWER_RAMSTATUS_RAMBLOCK0_Pos,
     NRF_POWER_RAMBLOCK1 = POWER_RAMSTATUS_RAMBLOCK1_Pos,
+#if defined(POWER_RAMSTATUS_RAMBLOCK2_Pos) ||  defined(__NRFX_DOXYGEN__)
     NRF_POWER_RAMBLOCK2 = POWER_RAMSTATUS_RAMBLOCK2_Pos,
+#endif
+#if defined(POWER_RAMSTATUS_RAMBLOCK3_Pos) ||  defined(__NRFX_DOXYGEN__)
     NRF_POWER_RAMBLOCK3 = POWER_RAMSTATUS_RAMBLOCK3_Pos
+#endif
 } nrf_power_ramblock_t;
 
 /**
@@ -189,8 +195,12 @@ typedef enum
 {
     NRF_POWER_RAMBLOCK0_MASK = POWER_RAMSTATUS_RAMBLOCK0_Msk,
     NRF_POWER_RAMBLOCK1_MASK = POWER_RAMSTATUS_RAMBLOCK1_Msk,
+#if defined(POWER_RAMSTATUS_RAMBLOCK2_Msk) ||  defined(__NRFX_DOXYGEN__)
     NRF_POWER_RAMBLOCK2_MASK = POWER_RAMSTATUS_RAMBLOCK2_Msk,
+#endif
+#if defined(POWER_RAMSTATUS_RAMBLOCK3_Msk) ||  defined(__NRFX_DOXYGEN__)
     NRF_POWER_RAMBLOCK3_MASK = POWER_RAMSTATUS_RAMBLOCK3_Msk
+#endif
 } nrf_power_ramblock_mask_t;
 #endif // defined(POWER_RAMSTATUS_RAMBLOCK0_Msk) || defined(__NRFX_DOXYGEN__)
 

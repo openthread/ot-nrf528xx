@@ -1,6 +1,8 @@
 /*
- * Copyright (c) 2012 - 2019, Nordic Semiconductor ASA
+ * Copyright (c) 2012 - 2021, Nordic Semiconductor ASA
  * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -51,34 +53,27 @@ bool nrf_ecb_init(void)
 
 bool nrf_ecb_crypt(uint8_t * dest_buf, const uint8_t * src_buf)
 {
-   bool     retval  = true;
    uint32_t counter = 0x1000000;
    if (src_buf != ecb_cleartext)
    {
      memcpy(ecb_cleartext,src_buf,16);
    }
    NRF_ECB->EVENTS_ENDECB = 0;
-   NRFX_CRITICAL_SECTION_ENTER();
    NRF_ECB->TASKS_STARTECB = 1;
    while (NRF_ECB->EVENTS_ENDECB == 0)
    {
     counter--;
     if (counter == 0)
     {
-      retval = false;
-      break;
+      return false;
     }
    }
-   NRFX_CRITICAL_SECTION_EXIT();
-   if (retval)
+   NRF_ECB->EVENTS_ENDECB = 0;
+   if (dest_buf != ecb_ciphertext)
    {
-    NRF_ECB->EVENTS_ENDECB = 0;
-    if (dest_buf != ecb_ciphertext)
-    {
-      memcpy(dest_buf,ecb_ciphertext,16);
-    }
+     memcpy(dest_buf,ecb_ciphertext,16);
    }
-   return retval;
+   return true;
 }
 
 void nrf_ecb_set_key(const uint8_t * key)

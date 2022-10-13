@@ -1,6 +1,8 @@
 /*
- * Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
+ * Copyright (c) 2015 - 2021, Nordic Semiconductor ASA
  * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -39,11 +41,14 @@
 extern "C" {
 #endif
 
+#if defined(NRFX_SAADC_API_V2)
+#include "nrfx_saadc_v2.h"
+#else
 /**
- * @defgroup nrfx_saadc SAADC driver
+ * @defgroup nrfx_saadc SAADC legacy driver
  * @{
  * @ingroup nrf_saadc
- * @brief   Successive Approximation Analog-to-Digital Converter (SAADC) peripheral driver.
+ * @brief   Successive Approximation Analog-to-Digital Converter (SAADC) peripheral legacy driver.
  */
 
 /** @brief Value to be set as high limit to disable limit detection. */
@@ -273,6 +278,10 @@ bool nrfx_saadc_is_busy(void);
  *
  * @note @ref NRFX_SAADC_EVT_DONE event will be generated if there is a conversion in progress.
  *       Event will contain number of words in the sample buffer.
+ *
+ * @warning This function must not be called from the context of event handler of the SAADC driver
+ *          or from the context of interrupt with priority equal to or higher than priority
+ *          of the SAADC interrupt.
  */
 void nrfx_saadc_abort(void);
 
@@ -294,10 +303,9 @@ void nrfx_saadc_abort(void);
 void nrfx_saadc_limits_set(uint8_t channel, int16_t limit_low, int16_t limit_high);
 
 /** @} */
-
+#endif // defined(NRFX_SAADC_API_V2)
 
 void nrfx_saadc_irq_handler(void);
-
 
 #ifdef __cplusplus
 }
