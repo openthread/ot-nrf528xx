@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2010 - 2021, Nordic Semiconductor ASA All rights reserved.
+Copyright (c) 2010 - 2022, Nordic Semiconductor ASA All rights reserved.
 
 SPDX-License-Identifier: BSD-3-Clause
 
@@ -130,7 +130,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
     #if (__VER__ >= 8000000)
         #ifndef __ALIGN
-            #define __ALIGN(n) __attribute__((aligned(x)))
+            #define __ALIGN(n) __attribute__((aligned(n)))
         #endif
 
         #ifndef   __PACKED

@@ -3,7 +3,7 @@
 
 /*
 
-Copyright (c) 2010 - 2021, Nordic Semiconductor ASA All rights reserved.
+Copyright (c) 2010 - 2022, Nordic Semiconductor ASA All rights reserved.
 
 SPDX-License-Identifier: BSD-3-Clause
 
@@ -132,6 +132,13 @@ static bool nrf53_errata_117(void) __UNUSED;
 static bool nrf53_errata_119(void) __UNUSED;
 static bool nrf53_errata_121(void) __UNUSED;
 static bool nrf53_errata_122(void) __UNUSED;
+static bool nrf53_errata_133(void) __UNUSED;
+static bool nrf53_errata_134(void) __UNUSED;
+static bool nrf53_errata_135(void) __UNUSED;
+static bool nrf53_errata_136(void) __UNUSED;
+static bool nrf53_errata_137(void) __UNUSED;
+static bool nrf53_errata_138(void) __UNUSED;
+static bool nrf53_errata_140(void) __UNUSED;
 
 /* ========= Errata 1 ========= */
 #if    defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -155,8 +162,13 @@ static bool nrf53_errata_1(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -205,8 +217,13 @@ static bool nrf53_errata_2(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -255,8 +272,13 @@ static bool nrf53_errata_3(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -305,8 +327,13 @@ static bool nrf53_errata_4(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -355,8 +382,13 @@ static bool nrf53_errata_5(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -455,8 +487,13 @@ static bool nrf53_errata_7(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -505,8 +542,13 @@ static bool nrf53_errata_8(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -555,8 +597,13 @@ static bool nrf53_errata_9(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -705,8 +752,13 @@ static bool nrf53_errata_12(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -756,8 +808,13 @@ static bool nrf53_errata_13(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -861,8 +918,13 @@ static bool nrf53_errata_15(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -965,8 +1027,13 @@ static bool nrf53_errata_18(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -1015,8 +1082,13 @@ static bool nrf53_errata_19(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -1066,8 +1138,13 @@ static bool nrf53_errata_20(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -1121,8 +1198,13 @@ static bool nrf53_errata_21(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -1175,8 +1257,13 @@ static bool nrf53_errata_22(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -1225,8 +1312,13 @@ static bool nrf53_errata_23(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -1276,8 +1368,13 @@ static bool nrf53_errata_26(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -1331,8 +1428,13 @@ static bool nrf53_errata_27(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -1386,8 +1488,13 @@ static bool nrf53_errata_28(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -1541,8 +1648,13 @@ static bool nrf53_errata_31(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -1645,8 +1757,13 @@ static bool nrf53_errata_33(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -1745,8 +1862,13 @@ static bool nrf53_errata_36(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -1811,8 +1933,13 @@ static bool nrf53_errata_42(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -1861,8 +1988,13 @@ static bool nrf53_errata_43(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -1912,8 +2044,13 @@ static bool nrf53_errata_44(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -1966,8 +2103,13 @@ static bool nrf53_errata_45(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2016,8 +2158,13 @@ static bool nrf53_errata_46(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2067,8 +2214,13 @@ static bool nrf53_errata_47(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -2122,8 +2274,13 @@ static bool nrf53_errata_49(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -2176,8 +2333,13 @@ static bool nrf53_errata_50(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2226,8 +2388,13 @@ static bool nrf53_errata_51(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2277,8 +2444,13 @@ static bool nrf53_errata_52(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -2331,8 +2503,13 @@ static bool nrf53_errata_53(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2432,8 +2609,13 @@ static bool nrf53_errata_55(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -2486,8 +2668,13 @@ static bool nrf53_errata_57(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2536,8 +2723,13 @@ static bool nrf53_errata_58(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2586,8 +2778,13 @@ static bool nrf53_errata_59(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2637,8 +2834,13 @@ static bool nrf53_errata_62(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -2691,8 +2893,13 @@ static bool nrf53_errata_64(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2741,8 +2948,13 @@ static bool nrf53_errata_65(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2791,8 +3003,13 @@ static bool nrf53_errata_66(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2842,8 +3059,13 @@ static bool nrf53_errata_67(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -2896,8 +3118,13 @@ static bool nrf53_errata_69(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2946,8 +3173,13 @@ static bool nrf53_errata_70(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -2996,8 +3228,13 @@ static bool nrf53_errata_71(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -3046,8 +3283,13 @@ static bool nrf53_errata_72(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -3097,8 +3339,13 @@ static bool nrf53_errata_73(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -3152,8 +3399,13 @@ static bool nrf53_errata_74(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -3206,8 +3458,13 @@ static bool nrf53_errata_75(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -3256,8 +3513,13 @@ static bool nrf53_errata_76(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -3307,8 +3569,13 @@ static bool nrf53_errata_77(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -3361,8 +3628,13 @@ static bool nrf53_errata_79(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -3411,8 +3683,13 @@ static bool nrf53_errata_80(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -3461,8 +3738,13 @@ static bool nrf53_errata_81(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -3511,8 +3793,13 @@ static bool nrf53_errata_82(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -3561,8 +3848,13 @@ static bool nrf53_errata_83(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -3611,8 +3903,13 @@ static bool nrf53_errata_84(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -3661,8 +3958,13 @@ static bool nrf53_errata_85(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -3712,8 +4014,13 @@ static bool nrf53_errata_86(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -3816,8 +4123,13 @@ static bool nrf53_errata_90(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -4017,8 +4329,13 @@ static bool nrf53_errata_97(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #elif defined(NRF_NETWORK)
                 uint32_t var1 = *(uint32_t *)0x01FF0130ul;
                 uint32_t var2 = *(uint32_t *)0x01FF0134ul;
@@ -4071,8 +4388,13 @@ static bool nrf53_errata_99(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -4137,8 +4459,13 @@ static bool nrf53_errata_105(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -4187,8 +4514,13 @@ static bool nrf53_errata_106(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -4237,8 +4569,13 @@ static bool nrf53_errata_107(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -4287,8 +4624,13 @@ static bool nrf53_errata_109(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -4337,8 +4679,13 @@ static bool nrf53_errata_110(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -4387,8 +4734,13 @@ static bool nrf53_errata_112(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -4537,8 +4889,13 @@ static bool nrf53_errata_115(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -4737,8 +5094,13 @@ static bool nrf53_errata_121(void)
     #else
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
             #if defined(NRF_APPLICATION)
-                uint32_t var1 = *(uint32_t *)0x00FF0130ul;
-                uint32_t var2 = *(uint32_t *)0x00FF0134ul;
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
             #endif
         #endif
         #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
@@ -4801,6 +5163,157 @@ static bool nrf53_errata_122(void)
                             return false;
                         case 0x03ul:
                             return false;
+                        case 0x04ul:
+                            return true;
+                        case 0x05ul:
+                            return true;
+                        default:
+                            return true;
+                    }
+                }
+            #endif
+        #endif
+        return false;
+    #endif
+}
+
+/* ========= Errata 133 ========= */
+#define NRF53_ERRATA_133_PRESENT 0
+
+#ifndef NRF53_ERRATA_133_ENABLE_WORKAROUND
+    #define NRF53_ERRATA_133_ENABLE_WORKAROUND NRF53_ERRATA_133_PRESENT
+#endif
+
+static bool nrf53_errata_133(void)
+{
+    #ifndef NRF53_SERIES
+        return false;
+    #else
+        return false;
+    #endif
+}
+
+/* ========= Errata 134 ========= */
+#define NRF53_ERRATA_134_PRESENT 0
+
+#ifndef NRF53_ERRATA_134_ENABLE_WORKAROUND
+    #define NRF53_ERRATA_134_ENABLE_WORKAROUND NRF53_ERRATA_134_PRESENT
+#endif
+
+static bool nrf53_errata_134(void)
+{
+    #ifndef NRF53_SERIES
+        return false;
+    #else
+        return false;
+    #endif
+}
+
+/* ========= Errata 135 ========= */
+#define NRF53_ERRATA_135_PRESENT 0
+
+#ifndef NRF53_ERRATA_135_ENABLE_WORKAROUND
+    #define NRF53_ERRATA_135_ENABLE_WORKAROUND NRF53_ERRATA_135_PRESENT
+#endif
+
+static bool nrf53_errata_135(void)
+{
+    #ifndef NRF53_SERIES
+        return false;
+    #else
+        return false;
+    #endif
+}
+
+/* ========= Errata 136 ========= */
+#define NRF53_ERRATA_136_PRESENT 0
+
+#ifndef NRF53_ERRATA_136_ENABLE_WORKAROUND
+    #define NRF53_ERRATA_136_ENABLE_WORKAROUND NRF53_ERRATA_136_PRESENT
+#endif
+
+static bool nrf53_errata_136(void)
+{
+    #ifndef NRF53_SERIES
+        return false;
+    #else
+        return false;
+    #endif
+}
+
+/* ========= Errata 137 ========= */
+#define NRF53_ERRATA_137_PRESENT 0
+
+#ifndef NRF53_ERRATA_137_ENABLE_WORKAROUND
+    #define NRF53_ERRATA_137_ENABLE_WORKAROUND NRF53_ERRATA_137_PRESENT
+#endif
+
+static bool nrf53_errata_137(void)
+{
+    #ifndef NRF53_SERIES
+        return false;
+    #else
+        return false;
+    #endif
+}
+
+/* ========= Errata 138 ========= */
+#define NRF53_ERRATA_138_PRESENT 0
+
+#ifndef NRF53_ERRATA_138_ENABLE_WORKAROUND
+    #define NRF53_ERRATA_138_ENABLE_WORKAROUND NRF53_ERRATA_138_PRESENT
+#endif
+
+static bool nrf53_errata_138(void)
+{
+    #ifndef NRF53_SERIES
+        return false;
+    #else
+        return false;
+    #endif
+}
+
+/* ========= Errata 140 ========= */
+#if    defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
+    #if defined(NRF_APPLICATION)
+        #define NRF53_ERRATA_140_PRESENT 1
+    #else
+        #define NRF53_ERRATA_140_PRESENT 0
+    #endif
+#else
+    #define NRF53_ERRATA_140_PRESENT 0
+#endif
+
+#ifndef NRF53_ERRATA_140_ENABLE_WORKAROUND
+    #define NRF53_ERRATA_140_ENABLE_WORKAROUND NRF53_ERRATA_140_PRESENT
+#endif
+
+static bool nrf53_errata_140(void)
+{
+    #ifndef NRF53_SERIES
+        return false;
+    #else
+        #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
+            #if defined(NRF_APPLICATION)
+                #if defined(NRF_TRUSTZONE_NONSECURE)
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_NS + 0x00000134ul));
+                #else
+                    uint32_t var1 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000130ul));
+                    uint32_t var2 = *((volatile uint32_t *)((uint32_t)NRF_FICR_S + 0x00000134ul));
+                #endif
+            #endif
+        #endif
+        #if defined (NRF5340_XXAA) || defined (DEVELOP_IN_NRF5340)
+            #if defined (NRF_APPLICATION)
+                if (var1 == 0x07)
+                {
+                    switch(var2)
+                    {
+                        case 0x02ul:
+                            return true;
+                        case 0x03ul:
+                            return true;
                         case 0x04ul:
                             return true;
                         case 0x05ul:
