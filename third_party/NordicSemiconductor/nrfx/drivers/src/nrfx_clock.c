@@ -1,6 +1,8 @@
 /*
- * Copyright (c) 2016 - 2019, Nordic Semiconductor ASA
+ * Copyright (c) 2016 - 2021, Nordic Semiconductor ASA
  * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -236,6 +238,9 @@ void nrfx_clock_lfclk_start(void)
 void nrfx_clock_lfclk_stop(void)
 {
     NRFX_ASSERT(m_clock_cb.module_initialized);
+
+    nrf_clock_int_disable(NRF_CLOCK_INT_LF_STARTED_MASK);
+    nrf_clock_event_clear(NRF_CLOCK_EVENT_LFCLKSTARTED);
     nrf_clock_task_trigger(NRF_CLOCK_TASK_LFCLKSTOP);
     while (nrf_clock_lf_is_running())
     {}
@@ -252,6 +257,9 @@ void nrfx_clock_hfclk_start(void)
 void nrfx_clock_hfclk_stop(void)
 {
     NRFX_ASSERT(m_clock_cb.module_initialized);
+
+    nrf_clock_int_disable(NRF_CLOCK_INT_HF_STARTED_MASK);
+    nrf_clock_event_clear(NRF_CLOCK_EVENT_HFCLKSTARTED);
     nrf_clock_task_trigger(NRF_CLOCK_TASK_HFCLKSTOP);
     while (nrf_clock_hf_is_running(NRF_CLOCK_HFCLK_HIGH_ACCURACY))
     {}

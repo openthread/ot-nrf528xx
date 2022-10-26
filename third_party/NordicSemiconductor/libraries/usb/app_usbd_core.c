@@ -1153,10 +1153,7 @@ static ret_code_t app_usbd_core_event_handler(app_usbd_class_inst_t const * cons
                 }
                 else
                 {
-                    if (!nrf_drv_usbd_errata_154())
-                    {
-                        nrf_drv_usbd_setup_clear();
-                    }
+                    nrf_drv_usbd_setup_clear();
                 }
             }
             else

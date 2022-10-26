@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2009-2018 ARM Limited. All rights reserved.
+Copyright (c) 2009-2022 ARM Limited. All rights reserved.
 
     SPDX-License-Identifier: Apache-2.0
 
@@ -26,10 +26,13 @@ NOTICE: This file has been modified by Nordic Semiconductor ASA.
 #include <stdint.h>
 #include <stdbool.h>
 #include "nrf.h"
+#include "nrf_peripherals.h"
+#include "nrf91_erratas.h"
 #include "system_nrf9160.h"
 
 /*lint ++flb "Enter library region" */
 
+void SystemStoreFICRNS();
 
 #define __SYSTEM_CLOCK      (64000000UL)     /*!< nRF9160 Application core uses a fixed System Clock Frequency of 64MHz */
 
@@ -63,10 +66,7 @@ NOTICE: This file has been modified by Nordic Semiconductor ASA.
 #if !defined(NRF_TRUSTZONE_NONSECURE)
     static bool uicr_HFXOSRC_erased(void);
     static bool uicr_HFXOCNT_erased(void);
-    static bool errata_6(void);
-    static bool errata_14(void);
-    static bool errata_15(void);
-    static bool errata_20(void);
+    static bool is_empty_word(uint32_t const volatile * word);
 #endif
 
 void SystemCoreClockUpdate(void)
@@ -87,34 +87,45 @@ void SystemInit(void)
         
         /* Workaround for Errata 6 "POWER: SLEEPENTER and SLEEPEXIT events asserted after pin reset" found at the Errata document
             for your device located at https://infocenter.nordicsemi.com/index.jsp  */
-        if (errata_6()){
+        if (nrf91_errata_6()){
             NRF_POWER_S->EVENTS_SLEEPENTER = (POWER_EVENTS_SLEEPENTER_EVENTS_SLEEPENTER_NotGenerated << POWER_EVENTS_SLEEPENTER_EVENTS_SLEEPENTER_Pos);
             NRF_POWER_S->EVENTS_SLEEPEXIT = (POWER_EVENTS_SLEEPEXIT_EVENTS_SLEEPEXIT_NotGenerated << POWER_EVENTS_SLEEPEXIT_EVENTS_SLEEPEXIT_Pos);
         }
 
         /* Workaround for Errata 14 "REGULATORS: LDO mode at startup" found at the Errata document
             for your device located at https://infocenter.nordicsemi.com/index.jsp  */
-        if (errata_14()){
+        if (nrf91_errata_14()){
             *((volatile uint32_t *)0x50004A38) = 0x01ul;
             NRF_REGULATORS_S->DCDCEN = REGULATORS_DCDCEN_DCDCEN_Enabled << REGULATORS_DCDCEN_DCDCEN_Pos;
         }
 
         /* Workaround for Errata 15 "REGULATORS: LDO mode at startup" found at the Errata document
             for your device located at https://infocenter.nordicsemi.com/index.jsp  */
-        if (errata_15()){
+        if (nrf91_errata_15()){
             NRF_REGULATORS_S->DCDCEN = REGULATORS_DCDCEN_DCDCEN_Enabled << REGULATORS_DCDCEN_DCDCEN_Pos;
         }
 
         /* Workaround for Errata 20 "RAM content cannot be trusted upon waking up from System ON Idle or System OFF mode" found at the Errata document
             for your device located at https://infocenter.nordicsemi.com/index.jsp  */
-        if (errata_20()){
+        if (nrf91_errata_20()){
             *((volatile uint32_t *)0x5003AEE4) = 0xE;
         }
 
+        /* Workaround for Errata 31 "XOSC32k Startup Failure" found at the Errata document
+            for your device located at https://infocenter.nordicsemi.com/index.jsp  */
+        if (nrf91_errata_31()){
+            *((volatile uint32_t *)0x5000470Cul) = 0x0;
+            *((volatile uint32_t *)0x50004710ul) = 0x1;
+        }
+
+        #if !defined(NRF_SKIP_FICR_NS_COPY_TO_RAM)
+            SystemStoreFICRNS();
+        #endif
+
         /* Trimming of the device. Copy all the trimming values from FICR into the target addresses. Trim
          until one ADDR is not initialized. */
-        uint32_t index = 0;
-        for (index = 0; index < 256ul && NRF_FICR_S->TRIMCNF[index].ADDR != 0xFFFFFFFFul; index++){
+        
+        for (uint32_t index = 0; index < 256ul && !is_empty_word(&NRF_FICR_S->TRIMCNF[index].ADDR); index++){
           #if defined ( __ICCARM__ )
               #pragma diag_suppress=Pa082
           #endif
@@ -126,35 +137,37 @@ void SystemInit(void)
 
         /* Set UICR->HFXOSRC and UICR->HFXOCNT to working defaults if UICR was erased */
         if (uicr_HFXOSRC_erased() || uicr_HFXOCNT_erased()) {
-          /* Wait for pending NVMC operations to finish */
-          while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
+              /* Wait for pending NVMC operations to finish */
+              while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
 
-          /* Enable write mode in NVMC */
-          NRF_NVMC_S->CONFIG = NVMC_CONFIG_WEN_Wen;
-          while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
+              /* Enable write mode in NVMC */
+              NRF_NVMC_S->CONFIG = NVMC_CONFIG_WEN_Wen;
+              while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
 
-          if (uicr_HFXOSRC_erased()){
-            /* Write default value to UICR->HFXOSRC */
-            uicr_erased_value = NRF_UICR_S->HFXOSRC;
-            uicr_new_value = (uicr_erased_value & ~UICR_HFXOSRC_HFXOSRC_Msk) | UICR_HFXOSRC_HFXOSRC_TCXO;
-            NRF_UICR_S->HFXOSRC = uicr_new_value;
-            while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
-          }
+              if (uicr_HFXOSRC_erased()){
+                    /* Write default value to UICR->HFXOSRC */
+                    uicr_erased_value = NRF_UICR_S->HFXOSRC;
+                    uicr_new_value = (uicr_erased_value & ~UICR_HFXOSRC_HFXOSRC_Msk) | UICR_HFXOSRC_HFXOSRC_TCXO;
+                    NRF_UICR_S->HFXOSRC = uicr_new_value;
+                    __DSB();
+                    while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
+              }
 
-          if (uicr_HFXOCNT_erased()){
-            /* Write default value to UICR->HFXOCNT */
-            uicr_erased_value = NRF_UICR_S->HFXOCNT;
-            uicr_new_value = (uicr_erased_value & ~UICR_HFXOCNT_HFXOCNT_Msk) | 0x20;
-            NRF_UICR_S->HFXOCNT = uicr_new_value;
-            while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
-          }
+              if (uicr_HFXOCNT_erased()){
+                    /* Write default value to UICR->HFXOCNT */
+                    uicr_erased_value = NRF_UICR_S->HFXOCNT;
+                    uicr_new_value = (uicr_erased_value & ~UICR_HFXOCNT_HFXOCNT_Msk) | 0x20;
+                    NRF_UICR_S->HFXOCNT = uicr_new_value;
+                    __DSB();
+                    while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
+              }
 
-          /* Enable read mode in NVMC */
-          NRF_NVMC_S->CONFIG = NVMC_CONFIG_WEN_Ren;
-          while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
+              /* Enable read mode in NVMC */
+              NRF_NVMC_S->CONFIG = NVMC_CONFIG_WEN_Ren;
+              while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
 
-          /* Reset to apply clock select update */
-          NVIC_SystemReset();
+              /* Reset to apply clock select update */
+              NVIC_SystemReset();
         }
 
         /* Enable Trace functionality. If ENABLE_TRACE is not defined, TRACE pins will be used as GPIOs (see Product
@@ -188,24 +201,24 @@ void SystemInit(void)
             // Set trace port speed to 32 MHz
             NRF_TAD_S->TRACEPORTSPEED = TAD_TRACEPORTSPEED_TRACEPORTSPEED_32MHz;
 
-            *((uint32_t *)(0xE0053000ul)) = 0x00000001ul;
+            *((volatile uint32_t *)(0xE0053000ul)) = 0x00000001ul;
             
-            *((uint32_t *)(0xE005AFB0ul))  = 0xC5ACCE55ul;
-            *((uint32_t *)(0xE005A000ul)) &= 0xFFFFFF00ul;
-            *((uint32_t *)(0xE005A004ul))  = 0x00000009ul;
-            *((uint32_t *)(0xE005A000ul))  = 0x00000303ul;
-            *((uint32_t *)(0xE005AFB0ul))  = 0x00000000ul;
+            *((volatile uint32_t *)(0xE005AFB0ul))  = 0xC5ACCE55ul;
+            *((volatile uint32_t *)(0xE005A000ul)) &= 0xFFFFFF00ul;
+            *((volatile uint32_t *)(0xE005A004ul))  = 0x00000009ul;
+            *((volatile uint32_t *)(0xE005A000ul))  = 0x00000303ul;
+            *((volatile uint32_t *)(0xE005AFB0ul))  = 0x00000000ul;
 
-            *((uint32_t *)(0xE005BFB0ul))  = 0xC5ACCE55ul;
-            *((uint32_t *)(0xE005B000ul)) &= 0xFFFFFF00ul;
-            *((uint32_t *)(0xE005B004ul))  = 0x00003000ul;
-            *((uint32_t *)(0xE005B000ul))  = 0x00000308ul;
-            *((uint32_t *)(0xE005BFB0ul))  = 0x00000000ul;
+            *((volatile uint32_t *)(0xE005BFB0ul))  = 0xC5ACCE55ul;
+            *((volatile uint32_t *)(0xE005B000ul)) &= 0xFFFFFF00ul;
+            *((volatile uint32_t *)(0xE005B004ul))  = 0x00003000ul;
+            *((volatile uint32_t *)(0xE005B000ul))  = 0x00000308ul;
+            *((volatile uint32_t *)(0xE005BFB0ul))  = 0x00000000ul;
 
-            *((uint32_t *)(0xE0058FB0ul)) = 0xC5ACCE55ul;
-            *((uint32_t *)(0xE0058000ul)) = 0x00000000ul;
-            *((uint32_t *)(0xE0058004ul)) = 0x00000000ul;
-            *((uint32_t *)(0xE0058FB0ul)) = 0x00000000ul;
+            *((volatile uint32_t *)(0xE0058FB0ul)) = 0xC5ACCE55ul;
+            *((volatile uint32_t *)(0xE0058000ul)) = 0x00000000ul;
+            *((volatile uint32_t *)(0xE0058004ul)) = 0x00000000ul;
+            *((volatile uint32_t *)(0xE0058FB0ul)) = 0x00000000ul;
 
             /* Rom table does not list ETB, or TPIU base addresses.
              * Some debug probes may require manual configuration of these peripherals to enable tracing.
@@ -236,7 +249,7 @@ void SystemInit(void)
 
     bool uicr_HFXOCNT_erased()
     {
-        if (NRF_UICR_S->HFXOCNT == 0xFFFFFFFFul) {
+        if (is_empty_word(&NRF_UICR_S->HFXOCNT)) {
             return true;
         }
         return false;
@@ -245,60 +258,68 @@ void SystemInit(void)
     
     bool uicr_HFXOSRC_erased()
     {
-        if ((NRF_UICR_S->HFXOSRC & UICR_HFXOSRC_HFXOSRC_Msk) != UICR_HFXOSRC_HFXOSRC_TCXO) {
+        uint32_t HFXOSRC_readout = NRF_UICR_S->HFXOSRC;
+        __DSB();
+        if ((HFXOSRC_readout & UICR_HFXOSRC_HFXOSRC_Msk) != UICR_HFXOSRC_HFXOSRC_TCXO) {
             return true;
         }
         return false;
     }
     
-
-    bool errata_6()
+    bool is_empty_word(uint32_t const volatile * word)
     {
-        if (*(uint32_t *)0x00FF0130 == 0x9ul){
-            if (*(uint32_t *)0x00FF0134 == 0x01ul){
-                return true;
-            }
-            if (*(uint32_t *)0x00FF0134 == 0x02ul){
-                return true;
-            }
-        }
-        
-        return false;
-    }
-
-    
-    bool errata_14()
-    {
-        if (*(uint32_t *)0x00FF0130 == 0x9ul){
-            if (*(uint32_t *)0x00FF0134 == 0x01ul){
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
-    bool errata_15()
-    {
-        if (*(uint32_t *)0x00FF0130 == 0x9ul){
-            if (*(uint32_t *)0x00FF0134 == 0x02ul){
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
-    bool errata_20()
-    {
-        if (((*(uint32_t *)0x00FF0004) & 0x1E) != 0x1C){
-            return true;
-        }
-
-        return false;
+        uint32_t val = *word;
+        __DSB();
+        return val == 0xFFFFFFFFul;
     }
 #endif
+
+
+/* Workaround to allow NS code to access FICR. Override NRF_FICR_NS to move FICR_NS buffer. */
+#define FICR_SIZE 0x1000ul
+#define RAM_BASE 0x20000000ul
+#define RAM_END  0x2FFFFFFFul
+
+/* Copy FICR_S to FICR_NS RAM region */
+void SystemStoreFICRNS()
+{
+    if ((uint32_t)NRF_FICR_NS < RAM_BASE || (uint32_t)NRF_FICR_NS + FICR_SIZE > RAM_END)
+    {
+        /* FICR_NS is not in RAM. */
+        return;
+    }
+    /* Copy FICR to NS-accessible RAM block. */
+    volatile uint32_t * from            = (volatile uint32_t *)((uint32_t)NRF_FICR_S + (FICR_SIZE - sizeof(uint32_t)));
+    volatile uint32_t * to              = (volatile uint32_t *)((uint32_t)NRF_FICR_NS + (FICR_SIZE - sizeof(uint32_t)));
+    volatile uint32_t * copy_from_end   = (volatile uint32_t *)NRF_FICR_S;
+    while (from >= copy_from_end)
+    {
+        *(to--) = *(from--);
+    }
+
+    /* Make RAM region NS. */
+    uint32_t ram_region = ((uint32_t)NRF_FICR_NS - (uint32_t)RAM_BASE) / SPU_RAMREGION_SIZE;
+    __DSB();
+    NRF_SPU_S->RAMREGION[ram_region].PERM &= ~(1 << SPU_RAMREGION_PERM_SECATTR_Pos);
+}
+
+/* Block write and execute access to FICR RAM region */
+void SystemLockFICRNS()
+{
+    if ((uint32_t)NRF_FICR_NS < RAM_BASE || (uint32_t)NRF_FICR_NS + FICR_SIZE > RAM_END)
+    {
+        /* FICR_NS is not in RAM. */
+        return;
+    }
+
+    uint32_t ram_region = ((uint32_t)NRF_FICR_NS - (uint32_t)RAM_BASE) / SPU_RAMREGION_SIZE;
+    __DSB();
+    NRF_SPU_S->RAMREGION[ram_region].PERM &=
+        ~(
+            (1 << SPU_RAMREGION_PERM_WRITE_Pos) |
+            (1 << SPU_RAMREGION_PERM_EXECUTE_Pos)
+        );
+    NRF_SPU_S->RAMREGION[ram_region].PERM |= 1 << SPU_RAMREGION_PERM_LOCK_Pos;
+}
 
 /*lint --flb "Leave library region" */

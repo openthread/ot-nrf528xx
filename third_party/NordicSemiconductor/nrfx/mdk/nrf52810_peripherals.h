@@ -1,6 +1,8 @@
 /*
 
-Copyright (c) 2010 - 2018, Nordic Semiconductor ASA All rights reserved.
+Copyright (c) 2010 - 2022, Nordic Semiconductor ASA All rights reserved.
+
+SPDX-License-Identifier: BSD-3-Clause
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -45,6 +47,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #define POWER_FEATURE_RAM_REGISTERS_PRESENT
 #define POWER_FEATURE_RAM_REGISTERS_COUNT       3
 
+/* Non-Volatile Memory Controller */
+#define NVMC_PRESENT
+#define NVMC_COUNT 1
+
 /* Systick timer */
 #define SYSTICK_PRESENT
 #define SYSTICK_COUNT 1
@@ -59,6 +65,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #define P0_PIN_NUM 32
 
+#define P0_FEATURE_PINS_PRESENT 0xFFFFFFFFUL
+
 /* MPU and BPROT */
 #define BPROT_PRESENT
 
@@ -70,6 +78,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #define RADIO_COUNT 1
 
 #define RADIO_EASYDMA_MAXCNT_SIZE 8
+
+#define RADIO_TXPOWER_TXPOWER_Max RADIO_TXPOWER_TXPOWER_Pos4dBm
 
 /* Accelerated Address Resolver */
 #define AAR_PRESENT
