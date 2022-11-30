@@ -256,90 +256,6 @@ exit:
     return error;
 }
 
-static otError processGpio(otInstance *aInstance,
-                           uint8_t     aArgsLength,
-                           char *      aArgs[],
-                           char *      aOutput,
-                           size_t      aOutputMaxLen)
-{
-    OT_UNUSED_VARIABLE(aInstance);
-
-    long    pinnum;
-    otError error = OT_ERROR_NONE;
-
-    otEXPECT_ACTION(otPlatDiagModeGet(), error = OT_ERROR_INVALID_STATE);
-
-    if (aArgsLength == 1)
-    {
-        uint32_t           value;
-        nrf_gpio_pin_dir_t pindir;
-
-        error = parseLong(aArgs[0], &pinnum);
-        otEXPECT(error == OT_ERROR_NONE);
-
-        pindir = nrf_gpio_pin_dir_get(pinnum);
-
-        if (pindir == NRF_GPIO_PIN_DIR_INPUT)
-        {
-            value = nrf_gpio_pin_read(pinnum);
-        }
-        else
-        {
-            value = nrf_gpio_pin_out_read(pinnum);
-        }
-
-        snprintf(aOutput, aOutputMaxLen, "gpio %d = %d\r\n", (uint8_t)pinnum, (uint8_t)value);
-    }
-    else if (strcmp(aArgs[0], "set") == 0)
-    {
-        otEXPECT_ACTION(aArgsLength == 2, error = OT_ERROR_INVALID_ARGS);
-        error = parseLong(aArgs[1], &pinnum);
-        otEXPECT(error == OT_ERROR_NONE);
-
-        nrf_gpio_pin_set(pinnum);
-
-        snprintf(aOutput, aOutputMaxLen, "gpio %d = 1\r\n", (uint8_t)pinnum);
-    }
-    else if (strcmp(aArgs[0], "clr") == 0)
-    {
-        otEXPECT_ACTION(aArgsLength == 2, error = OT_ERROR_INVALID_ARGS);
-        error = parseLong(aArgs[1], &pinnum);
-        otEXPECT(error == OT_ERROR_NONE);
-
-        nrf_gpio_pin_clear(pinnum);
-
-        snprintf(aOutput, aOutputMaxLen, "gpio %d = 0\r\n", (uint8_t)pinnum);
-    }
-    else if (strcmp(aArgs[0], "out") == 0)
-    {
-        otEXPECT_ACTION(aArgsLength == 2, error = OT_ERROR_INVALID_ARGS);
-        error = parseLong(aArgs[1], &pinnum);
-        otEXPECT(error == OT_ERROR_NONE);
-
-        nrf_gpio_cfg_output(pinnum);
-
-        snprintf(aOutput, aOutputMaxLen, "gpio %d: out\r\n", (uint8_t)pinnum);
-    }
-    else if (strcmp(aArgs[0], "in") == 0)
-    {
-        otEXPECT_ACTION(aArgsLength == 2, error = OT_ERROR_INVALID_ARGS);
-        error = parseLong(aArgs[1], &pinnum);
-        otEXPECT(error == OT_ERROR_NONE);
-
-        nrf_gpio_cfg_input(pinnum, NRF_GPIO_PIN_NOPULL);
-
-        snprintf(aOutput, aOutputMaxLen, "gpio %d: in no pull\r\n", (uint8_t)pinnum);
-    }
-    else
-    {
-        error = OT_ERROR_INVALID_ARGS;
-    }
-
-exit:
-    appendErrorResult(error, aOutput, aOutputMaxLen);
-    return error;
-}
-
 static otError processTemp(otInstance *aInstance,
                            uint8_t     aArgsLength,
                            char *      aArgs[],
@@ -405,14 +321,11 @@ exit:
     return error;
 }
 
-const struct PlatformDiagCommand sCommands[] = {
-    {"ccathreshold", &processCcaThreshold},
-    {"gpio", &processGpio},
-    {"id", &processID},
-    {"listen", &processListen},
-    {"temp", &processTemp},
-    {"transmit", &processTransmit},
-};
+const struct PlatformDiagCommand sCommands[] = {{"ccathreshold", &processCcaThreshold},
+                                                {"id", &processID},
+                                                {"listen", &processListen},
+                                                {"temp", &processTemp},
+                                                {"transmit", &processTransmit}};
 
 otError otPlatDiagProcess(otInstance *aInstance,
                           uint8_t     aArgsLength,
@@ -532,4 +445,92 @@ void otPlatDiagAlarmCallback(otInstance *aInstance)
             otPlatLog(OT_LOG_LEVEL_DEBG, OT_LOG_REGION_PLATFORM, "Transmit done");
         }
     }
+}
+
+otError otPlatDiagGpioSet(uint32_t aGpio, bool aValue)
+{
+    otError error = OT_ERROR_NONE;
+
+    otEXPECT_ACTION(otPlatDiagModeGet(), error = OT_ERROR_INVALID_STATE);
+    otEXPECT_ACTION(nrf_gpio_pin_present_check(aGpio), error = OT_ERROR_INVALID_ARGS);
+    otEXPECT_ACTION(nrf_gpio_pin_dir_get(aGpio) == NRF_GPIO_PIN_DIR_OUTPUT, error = OT_ERROR_FAILED);
+
+    nrf_gpio_pin_write(aGpio, (uint32_t)aValue);
+
+exit:
+    return error;
+}
+
+otError otPlatDiagGpioGet(uint32_t aGpio, bool *aValue)
+{
+    otError            error = OT_ERROR_NONE;
+    nrf_gpio_pin_dir_t pinDir;
+
+    otEXPECT_ACTION(otPlatDiagModeGet(), error = OT_ERROR_INVALID_STATE);
+    otEXPECT_ACTION((aValue != NULL) && (nrf_gpio_pin_present_check(aGpio)), error = OT_ERROR_INVALID_ARGS);
+
+    pinDir = nrf_gpio_pin_dir_get(aGpio);
+    if (pinDir == NRF_GPIO_PIN_DIR_INPUT)
+    {
+        *aValue = (bool)nrf_gpio_pin_read(aGpio);
+    }
+    else
+    {
+        *aValue = (bool)nrf_gpio_pin_out_read(aGpio);
+    }
+
+exit:
+    return error;
+}
+
+otError otPlatDiagGpioSetMode(uint32_t aGpio, otGpioMode aMode)
+{
+    otError error = OT_ERROR_NONE;
+
+    otEXPECT_ACTION(otPlatDiagModeGet(), error = OT_ERROR_INVALID_STATE);
+    otEXPECT_ACTION(nrf_gpio_pin_present_check(aGpio), error = OT_ERROR_INVALID_ARGS);
+
+    switch (aMode)
+    {
+    case OT_GPIO_MODE_INPUT:
+        nrf_gpio_cfg_input(aGpio, NRF_GPIO_PIN_NOPULL);
+        break;
+
+    case OT_GPIO_MODE_OUTPUT:
+        nrf_gpio_cfg_output(aGpio);
+        break;
+
+    default:
+        error = OT_ERROR_INVALID_ARGS;
+    }
+
+exit:
+    return error;
+}
+
+otError otPlatDiagGpioGetMode(uint32_t aGpio, otGpioMode *aMode)
+{
+    otError            error = OT_ERROR_NONE;
+    nrf_gpio_pin_dir_t pinDir;
+
+    otEXPECT_ACTION(otPlatDiagModeGet(), error = OT_ERROR_INVALID_STATE);
+    otEXPECT_ACTION((aMode != NULL) && (nrf_gpio_pin_present_check(aGpio)), error = OT_ERROR_INVALID_ARGS);
+
+    pinDir = nrf_gpio_pin_dir_get(aGpio);
+    switch (pinDir)
+    {
+    case NRF_GPIO_PIN_DIR_INPUT:
+        *aMode = OT_GPIO_MODE_INPUT;
+        break;
+
+    case NRF_GPIO_PIN_DIR_OUTPUT:
+        *aMode = OT_GPIO_MODE_OUTPUT;
+        break;
+
+    default:
+        error = OT_ERROR_FAILED;
+    }
+
+exit:
+    return error;
 }
