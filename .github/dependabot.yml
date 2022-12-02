@@ -38,5 +38,11 @@ updates:
       prefix: "submodule"
     rebase-strategy: "disabled"
     open-pull-requests-limit: 1
-    reviewers:
-      - "MarekPorwisz"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "github-actions"
+    rebase-strategy: "disabled"
+    open-pull-requests-limit: 1
