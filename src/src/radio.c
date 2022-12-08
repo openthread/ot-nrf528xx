@@ -104,7 +104,7 @@ static uint8_t      sTransmitPsdu[OT_RADIO_FRAME_MAX_SIZE + 1];
 #if OPENTHREAD_CONFIG_MAC_HEADER_IE_SUPPORT
 static otExtAddress  sExtAddress;
 static otRadioIeInfo sTransmitIeInfo;
-static otInstance *  sInstance = NULL;
+static otInstance   *sInstance = NULL;
 #endif
 
 static otRadioFrame sAckFrame;
@@ -1147,7 +1147,7 @@ void nrf_802154_tx_ack_started(uint8_t *p_data, int8_t power, uint8_t lqi)
 }
 
 void nrf_802154_transmitted_timestamp_raw(const uint8_t *aFrame,
-                                          uint8_t *      aAckPsdu,
+                                          uint8_t       *aAckPsdu,
                                           int8_t         aPower,
                                           uint8_t        aLqi,
                                           uint32_t       ack_time)
@@ -1289,7 +1289,7 @@ uint64_t otPlatRadioGetNow(otInstance *aInstance)
 }
 
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
-void otPlatRadioSetMacKey(otInstance *            aInstance,
+void otPlatRadioSetMacKey(otInstance             *aInstance,
                           uint8_t                 aKeyIdMode,
                           uint8_t                 aKeyId,
                           const otMacKeyMaterial *aPrevKey,
@@ -1373,7 +1373,7 @@ static void updateIeData(otInstance *aInstance, otShortAddress aShortAddr, const
 #endif // OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE || OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
 
 #if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
-otError otPlatRadioEnableCsl(otInstance *        aInstance,
+otError otPlatRadioEnableCsl(otInstance         *aInstance,
                              uint32_t            aCslPeriod,
                              otShortAddress      aShortAddr,
                              const otExtAddress *aExtAddr)
@@ -1409,10 +1409,10 @@ uint8_t otPlatRadioGetCslClockUncertainty(otInstance *aInstance)
 #endif // OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
 
 #if OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
-otError otPlatRadioConfigureEnhAckProbing(otInstance *         aInstance,
+otError otPlatRadioConfigureEnhAckProbing(otInstance          *aInstance,
                                           otLinkMetrics        aLinkMetrics,
                                           const otShortAddress aShortAddress,
-                                          const otExtAddress * aExtAddress)
+                                          const otExtAddress  *aExtAddress)
 {
     OT_UNUSED_VARIABLE(aInstance);
     OT_UNUSED_VARIABLE(aLinkMetrics);

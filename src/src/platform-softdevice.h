@@ -50,7 +50,7 @@ typedef struct
 {
     uint32_t timeslotLength; /**< Timeslot length requested by the module in microseconds. */
     uint32_t
-             timeslotTimeout; /**< Longest acceptable delay until the start of the requested timeslot in microseconds. */
+        timeslotTimeout; /**< Longest acceptable delay until the start of the requested timeslot in microseconds. */
     uint32_t timeslotMaxLength;  /**< Maximum single timeslot length created by extension processing in microseconds. */
     uint16_t timeslotAllocIters; /**< Maximum number of iteration of dividing timeslot_length by factor of 2 performed
                                     by arbiter. */

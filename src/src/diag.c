@@ -84,9 +84,9 @@ static int32_t                    sTxCount          = 0;
 static int32_t                    sTxRequestedCount = 1;
 static int16_t                    sID               = -1;
 static struct PlatformDiagMessage sDiagMessage      = {.mMessageDescriptor = "DiagMessage",
-                                                  .mChannel           = 0,
-                                                  .mID                = 0,
-                                                  .mCnt               = 0};
+                                                       .mChannel           = 0,
+                                                       .mID                = 0,
+                                                       .mCnt               = 0};
 
 static otError parseLong(char *aArgs, long *aValue)
 {
@@ -113,8 +113,8 @@ static bool startCarrierTransmision(void)
 
 static otError processListen(otInstance *aInstance,
                              uint8_t     aArgsLength,
-                             char *      aArgs[],
-                             char *      aOutput,
+                             char       *aArgs[],
+                             char       *aOutput,
                              size_t      aOutputMaxLen)
 {
     OT_UNUSED_VARIABLE(aInstance);
@@ -173,8 +173,8 @@ exit:
 
 static otError processTransmit(otInstance *aInstance,
                                uint8_t     aArgsLength,
-                               char *      aArgs[],
-                               char *      aOutput,
+                               char       *aArgs[],
+                               char       *aOutput,
                                size_t      aOutputMaxLen)
 {
     otError error = OT_ERROR_NONE;
@@ -258,8 +258,8 @@ exit:
 
 static otError processTemp(otInstance *aInstance,
                            uint8_t     aArgsLength,
-                           char *      aArgs[],
-                           char *      aOutput,
+                           char       *aArgs[],
+                           char       *aOutput,
                            size_t      aOutputMaxLen)
 {
     OT_UNUSED_VARIABLE(aInstance);
@@ -284,8 +284,8 @@ exit:
 
 static otError processCcaThreshold(otInstance *aInstance,
                                    uint8_t     aArgsLength,
-                                   char *      aArgs[],
-                                   char *      aOutput,
+                                   char       *aArgs[],
+                                   char       *aOutput,
                                    size_t      aOutputMaxLen)
 {
     OT_UNUSED_VARIABLE(aInstance);
@@ -329,8 +329,8 @@ const struct PlatformDiagCommand sCommands[] = {{"ccathreshold", &processCcaThre
 
 otError otPlatDiagProcess(otInstance *aInstance,
                           uint8_t     aArgsLength,
-                          char *      aArgs[],
-                          char *      aOutput,
+                          char       *aArgs[],
+                          char       *aOutput,
                           size_t      aOutputMaxLen)
 {
     otError error = OT_ERROR_INVALID_COMMAND;

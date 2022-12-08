@@ -31,15 +31,21 @@ set -euxo pipefail
 
 OT_CMAKE_NINJA_TARGET=${OT_CMAKE_NINJA_TARGET:-}
 
-readonly NRF_PLATFORMS=(nrf52811 nrf52833 nrf52840)
-readonly NRF_BUILD_TYPES=(UART_trans USB_trans SPI_trans_NCP soft_crypto soft_crypto_threading)
+NRF_PLATFORMS=(nrf52811 nrf52833 nrf52840)
+readonly NRF_PLATFORMS
 
-readonly OT_SRCDIR="$(pwd)"
-readonly OT_OPTIONS=(
+NRF_BUILD_TYPES=(UART_trans USB_trans SPI_trans_NCP soft_crypto soft_crypto_threading)
+readonly NRF_BUILD_TYPES
+
+OT_SRCDIR="$(pwd)"
+readonly OT_SRCDIR
+
+OT_OPTIONS=(
     "-DCMAKE_BUILD_TYPE=MinSizeRel"
     "-DOT_PLATFORM=external"
     "-DOT_SLAAC=ON"
 )
+readonly OT_OPTIONS
 
 die()
 {

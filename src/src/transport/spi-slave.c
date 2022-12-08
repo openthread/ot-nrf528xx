@@ -48,10 +48,10 @@
 /**
  *  SPI Slave transaction variables.
  */
-static void *                                    sContext                = NULL;
-static uint8_t *                                 sOutputBuf              = NULL;
+static void                                     *sContext                = NULL;
+static uint8_t                                  *sOutputBuf              = NULL;
 static uint16_t                                  sOutputBufLen           = 0;
-static uint8_t *                                 sInputBuf               = NULL;
+static uint8_t                                  *sInputBuf               = NULL;
 static uint16_t                                  sInputBufLen            = 0;
 static bool                                      sRequestTransactionFlag = false;
 static bool                                      sFurtherProcessingFlag  = false;
@@ -126,7 +126,7 @@ exit:
 
 otError otPlatSpiSlaveEnable(otPlatSpiSlaveTransactionCompleteCallback aCompleteCallback,
                              otPlatSpiSlaveTransactionProcessCallback  aProcessCallback,
-                             void *                                    aContext)
+                             void                                     *aContext)
 {
     otError            result = OT_ERROR_NONE;
     nrfx_err_t         error  = NRFX_SUCCESS;
