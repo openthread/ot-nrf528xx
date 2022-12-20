@@ -453,7 +453,7 @@ otError otPlatDiagGpioSet(uint32_t aGpio, bool aValue)
 
     otEXPECT_ACTION(otPlatDiagModeGet(), error = OT_ERROR_INVALID_STATE);
     otEXPECT_ACTION(nrf_gpio_pin_present_check(aGpio), error = OT_ERROR_INVALID_ARGS);
-    otEXPECT_ACTION(nrf_gpio_pin_dir_get(aGpio) == NRF_GPIO_PIN_DIR_OUTPUT, error = OT_ERROR_FAILED);
+    otEXPECT_ACTION(nrf_gpio_pin_dir_get(aGpio) == NRF_GPIO_PIN_DIR_OUTPUT, error = OT_ERROR_INVALID_STATE);
 
     nrf_gpio_pin_write(aGpio, (uint32_t)aValue);
 
