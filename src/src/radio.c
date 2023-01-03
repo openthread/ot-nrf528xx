@@ -1323,6 +1323,20 @@ void otPlatRadioSetMacFrameCounter(otInstance *aInstance, uint32_t aMacFrameCoun
 
     CRITICAL_REGION_EXIT();
 }
+
+void otPlatRadioSetMacFrameCounterIfLarger(otInstance *aInstance, uint32_t aMacFrameCounter)
+{
+    OT_UNUSED_VARIABLE(aInstance);
+
+    CRITICAL_REGION_ENTER();
+
+    if (aMacFrameCounter > sMacFrameCounter)
+    {
+        sMacFrameCounter = aMacFrameCounter;
+    }
+
+    CRITICAL_REGION_EXIT();
+}
 #endif // OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
 
 #if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE || OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
