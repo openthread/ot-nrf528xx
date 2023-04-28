@@ -288,7 +288,10 @@ exit:
 otError otPlatUartSend(const uint8_t *aBuf, uint16_t aBufLength)
 {
     otError error = OT_ERROR_NONE;
-
+    if (sTransmitBuffer && !sTransmitDone)
+    {
+        otPlatUartFlush();
+    }
     otEXPECT_ACTION(sTransmitBuffer == NULL, error = OT_ERROR_BUSY);
 
     // Set up transmit buffer.
