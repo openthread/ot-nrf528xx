@@ -247,14 +247,30 @@
 #endif
 
 /**
- * @def OPENTHREAD_CONFIG_CSL_MIN_RECEIVE_ON
+ * @def OPENTHREAD_CONFIG_MIN_RECEIVE_ON_AHEAD
  *
- * The minimum CSL receive window (in microseconds) required to receive an IEEE 802.15.4 frame.
- * - Frame preamble: 6*2 symbols + margin
+ * The minimum time (in microseconds) before the MHR start that the radio should be in receive state and ready to
+ * properly receive in order to properly receive any IEEE 802.15.4 frame.
+ *
+ * Preamble (last 40 us) + SFD (32 us) + PHR (32 us).
  *
  */
-#ifndef OPENTHREAD_CONFIG_CSL_MIN_RECEIVE_ON
-#define OPENTHREAD_CONFIG_CSL_MIN_RECEIVE_ON 12 * 16
+#ifndef OPENTHREAD_CONFIG_MIN_RECEIVE_ON_AHEAD
+#define OPENTHREAD_CONFIG_MIN_RECEIVE_ON_AHEAD 104
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MIN_RECEIVE_ON_AFTER
+ *
+ * The minimum time (in microseconds) after the MHR start that the radio should be in receive state in order
+ * to properly receive any IEEE 802.15.4 frame.
+ *
+ * Set to zero since nRF radio will automatically extend the duration of the receive window once the SHR has
+ * been detected.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MIN_RECEIVE_ON_AFTER
+#define OPENTHREAD_CONFIG_MIN_RECEIVE_ON_AFTER 0
 #endif
 
 /**
