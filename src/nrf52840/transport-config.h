@@ -283,7 +283,7 @@
  * limitation. Takes values between 0-255.
  */
 #ifndef USB_CDC_ACM_COMM_INTERFACE
-#define USB_CDC_ACM_COMM_INTERFACE 1
+#define USB_CDC_ACM_COMM_INTERFACE 0
 #endif
 
 /**
@@ -293,7 +293,7 @@
  * limitation. Takes values between 0-255.
  */
 #ifndef USB_CDC_ACM_DATA_INTERFACE
-#define USB_CDC_ACM_DATA_INTERFACE 2
+#define USB_CDC_ACM_DATA_INTERFACE 1
 #endif
 
 /**
