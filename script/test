@@ -69,6 +69,15 @@ main()
     "$(dirname "$0")"/build nrf52840 SPI_trans_NCP "${OT_OPTIONS[@]}"
 
     rm -rf "$OT_BUILDDIR"
+    "$(dirname "$0")"/build nrf52811 RTT_trans "${OT_OPTIONS[@]}"
+
+    rm -rf "$OT_BUILDDIR"
+    "$(dirname "$0")"/build nrf52833 RTT_trans "${OT_OPTIONS[@]}"
+
+    rm -rf "$OT_BUILDDIR"
+    "$(dirname "$0")"/build nrf52840 RTT_trans "${OT_OPTIONS[@]}"
+
+    rm -rf "$OT_BUILDDIR"
     "$(dirname "$0")"/build nrf52840 soft_crypto "${OT_OPTIONS[@]}"
 
     rm -rf "$OT_BUILDDIR"

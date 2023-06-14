@@ -26,14 +26,18 @@
 #  POSSIBILITY OF SUCH DAMAGE.
 #
 
-if(OT_NCP_SPI)
-    list(APPEND OT_PLATFORM_DEFINES "SPIS_AS_SERIAL_TRANSPORT=1")
+if(OT_RTT_UART)
+    list(APPEND OT_PLATFORM_DEFINES "OPENTHREAD_UART_RTT_ENABLE=1")
 else()
-    option(OT_USB "enable nrf USB as serial transport support")
-    if(OT_USB)
-        list(APPEND OT_PLATFORM_DEFINES "USB_CDC_AS_SERIAL_TRANSPORT=1")
+    if(OT_NCP_SPI)
+        list(APPEND OT_PLATFORM_DEFINES "SPIS_AS_SERIAL_TRANSPORT=1")
     else()
-        list(APPEND OT_PLATFORM_DEFINES "UART_AS_SERIAL_TRANSPORT=1")
+        option(OT_USB "enable nrf USB as serial transport support")
+        if(OT_USB)
+            list(APPEND OT_PLATFORM_DEFINES "USB_CDC_AS_SERIAL_TRANSPORT=1")
+        else()
+            list(APPEND OT_PLATFORM_DEFINES "UART_AS_SERIAL_TRANSPORT=1")
+        endif()
     endif()
 endif()
 

@@ -46,6 +46,8 @@
 
 #include <openthread/config.h>
 
+#include <utils/uart_rtt.h>
+
 #if !OPENTHREAD_CONFIG_ENABLE_BUILTIN_MBEDTLS_MANAGEMENT && PLATFORM_OPENTHREAD_VANILLA
 
 #include <mbedtls/platform.h>
@@ -139,6 +141,9 @@ bool otSysPseudoResetWasRequested(void)
 
 void otSysProcessDrivers(otInstance *aInstance)
 {
+#if OPENTHREAD_UART_RTT_ENABLE
+    utilsUartRttUpdate();
+#endif
     nrf5RadioProcess(aInstance);
     nrf5TransportProcess();
     nrf5TempProcess();
