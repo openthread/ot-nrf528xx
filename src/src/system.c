@@ -141,9 +141,6 @@ bool otSysPseudoResetWasRequested(void)
 
 void otSysProcessDrivers(otInstance *aInstance)
 {
-#if OPENTHREAD_UART_RTT_ENABLE
-    utilsUartRttProcess();
-#endif
     nrf5RadioProcess(aInstance);
     nrf5TransportProcess();
     nrf5TempProcess();
