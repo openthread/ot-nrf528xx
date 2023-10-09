@@ -38,6 +38,8 @@
 
 #include "transport-drivers.h"
 
+#include "utils/uart_rtt.h"
+
 void nrf5TransportInit(bool aPseudoReset)
 {
     OT_UNUSED_VARIABLE(aPseudoReset);

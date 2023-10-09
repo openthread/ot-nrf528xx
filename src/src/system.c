@@ -46,8 +46,6 @@
 
 #include <openthread/config.h>
 
-#include <utils/uart_rtt.h>
-
 #if !OPENTHREAD_CONFIG_ENABLE_BUILTIN_MBEDTLS_MANAGEMENT && PLATFORM_OPENTHREAD_VANILLA
 
 #include <mbedtls/platform.h>
