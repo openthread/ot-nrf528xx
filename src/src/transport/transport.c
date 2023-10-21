@@ -38,6 +38,8 @@
 
 #include "transport-drivers.h"
 
+#include "utils/uart_rtt.h"
+
 void nrf5TransportInit(bool aPseudoReset)
 {
     OT_UNUSED_VARIABLE(aPseudoReset);
@@ -81,6 +83,9 @@ void nrf5TransportProcess(void)
 #endif
 #if (SPIS_AS_SERIAL_TRANSPORT == 1)
     nrf5SpiSlaveProcess();
+#endif
+#if (OPENTHREAD_UART_RTT_ENABLE == 1)
+    utilsUartRttProcess();
 #endif
 }
 

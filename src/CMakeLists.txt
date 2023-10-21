@@ -26,7 +26,9 @@
 #  POSSIBILITY OF SUCH DAMAGE.
 #
 
-if(OT_NCP_SPI)
+if(OT_RTT_UART)
+    list(APPEND OT_PLATFORM_DEFINES "OPENTHREAD_UART_RTT_ENABLE=1")
+elseif(OT_NCP_SPI)
     list(APPEND OT_PLATFORM_DEFINES "SPIS_AS_SERIAL_TRANSPORT=1")
 else()
     option(OT_USB "enable nrf USB as serial transport support")
