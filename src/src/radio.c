@@ -359,6 +359,9 @@ void otPlatRadioSetShortAddress(otInstance *aInstance, uint16_t aShortAddress)
 void nrf5RadioInit(void)
 {
     dataInit();
+#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
+    otLinkMetricsInit(NRF528XX_RECEIVE_SENSITIVITY);
+#endif
     nrf_802154_init();
 }
 
