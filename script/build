@@ -42,6 +42,7 @@ readonly OT_SRCDIR
 
 OT_OPTIONS=(
     "-DCMAKE_BUILD_TYPE=MinSizeRel"
+    "-DBUILD_TESTING=OFF"
     "-DOT_PLATFORM=external"
     "-DOT_SLAAC=ON"
 )
