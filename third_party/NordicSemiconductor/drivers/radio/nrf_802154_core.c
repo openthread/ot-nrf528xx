@@ -2087,6 +2087,10 @@ static void irq_crcok_state_rx(void)
 
     m_flags.rssi_started = true;
 
+#if !NRF_802154_DISABLE_BCC_MATCHING
+    m_flags.psdu_being_received = false;
+#endif
+
 #if NRF_802154_DISABLE_BCC_MATCHING
     uint8_t               num_data_bytes      = PHR_SIZE + FCF_SIZE;
     uint8_t               prev_num_data_bytes = 0;
