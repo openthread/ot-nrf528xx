@@ -1416,7 +1416,7 @@ uint8_t otPlatRadioGetCslAccuracy(otInstance *aInstance)
     return otPlatTimeGetXtalAccuracy() / 2;
 }
 
-uint8_t otPlatRadioGetCslClockUncertainty(otInstance *aInstance)
+uint8_t otPlatRadioGetCslUncertainty(otInstance *aInstance)
 {
     OT_UNUSED_VARIABLE(aInstance);
 
