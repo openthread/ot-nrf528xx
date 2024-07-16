@@ -314,4 +314,187 @@ const uint8_t * nrf_802154_frame_parser_ie_header_get(const uint8_t * p_frame);
  */
 uint8_t nrf_802154_frame_parser_ie_header_offset_get(const uint8_t * p_frame);
 
+/**
+ * @brief Determines if the frame is multipurpose frame.
+ *
+ * @param[in]   p_frame   Pointer to a frame to be checked.
+ *
+ * @retval  true   The frame is multipurpose frame.
+ * @retval  false  The frame is not multipurpose frame.
+ *
+ */
+bool nrf_802154_frame_parser_is_mp_frame(const uint8_t * p_frame);
+
+/**
+ * @brief Determines if the multipurpose frame is long frame.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame to be checked.
+ *
+ * @retval  true   The multipurpose frame is long frame.
+ * @retval  false  The multipurpose frame is not long frame.
+ *
+ */
+bool nrf_802154_frame_parser_is_mp_long_frame(const uint8_t * p_frame);
+
+/**
+ * @brief Determines if the destination address in the multipurpose frame is extended.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame to be checked.
+ *
+ * @retval  true   Destination address is extended.
+ * @retval  false  Destination address is not extended.
+ */
+bool nrf_802154_frame_parser_mp_dst_addr_is_extended(const uint8_t * p_frame);
+
+/**
+ * @brief Determines if the source address of the multipurpose frame is extended.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame to be checked.
+ *
+ * @retval  true   Source address is extended.
+ * @retval  false  Source address is not extended.
+ */
+bool nrf_802154_frame_parser_mp_src_addr_is_extended(const uint8_t * p_frame);
+
+/**
+ * @brief Determines if the source address of the multipurpose frame is short.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame to be checked.
+ *
+ * @retval  true   The source address is short.
+ * @retval  false  The source address is not short.
+ *
+ */
+bool nrf_802154_frame_parser_mp_src_addr_is_short(const uint8_t * p_frame);
+
+/**
+ * @brief Determines if the sequence number suppression bit of the multipurpose frame is set.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame to be checked.
+ *
+ * @retval  true   Sequence number suppression bit is set.
+ * @retval  false  Sequence number suppression bit is not set.
+ *
+ */
+bool nrf_802154_frame_parser_mp_dsn_suppress_bit_is_set(const uint8_t * p_frame);
+
+/**
+ * @brief Determines if the IE present bit of the multipurpose frame is set.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame to be checked.
+ *
+ * @retval  true   IE present bit is set.
+ * @retval  false  IE present bit is not set.
+ *
+ */
+bool nrf_802154_frame_parser_mp_ie_present_bit_is_set(const uint8_t * p_frame);
+
+/**
+ * @brief Determines if the Ack Request (AR) bit of the multipurpose frame is set.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame to be checked.
+ *
+ * @retval  true   AR bit is set.
+ * @retval  false  AR bit is not set.
+ *
+ */
+bool nrf_802154_frame_parser_mp_ar_bit_is_set(const uint8_t * p_frame);
+
+/**
+ * @brief Gets the offset of the destination PAN ID field in the multipurpose frame.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame.
+ *
+ * @returns  Offset in bytes of the destination PAN ID field, including one byte
+ *           of the frame length.
+ * @returns  Zero in case the destination PAN ID cannot be retrieved.
+ *
+ */
+uint8_t nrf_802154_frame_parser_mp_dst_panid_offset_get(const uint8_t * p_frame);
+
+/**
+ * @brief Gets the offset of the destination address field in the multipurpose frame.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame.
+ *
+ * @returns  Offset in bytes of the destination address field, including one byte
+ *           of the frame length.
+ * @returns  Zero if the destination address cannot be retrieved.
+ *
+ */
+uint8_t nrf_802154_frame_parser_mp_dst_addr_offset_get(const uint8_t * p_frame);
+
+/**
+ * @brief Gets the offset of the end of the destination address fields in the multipurpose frame.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame.
+ *
+ * @returns  Offset of the first byte following the destination addressing fields in the MHR.
+ *
+ */
+uint8_t nrf_802154_frame_parser_mp_dst_addr_end_offset_get(const uint8_t * p_frame);
+
+/**
+ * @brief Gets the offset of the source address field in the multipurpose frame.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame.
+ *
+ * @returns  Offset in bytes of the source address field, including one byte of the frame length.
+ * @returns  Zero if the source address cannot be retrieved.
+ *
+ */
+uint8_t nrf_802154_frame_parser_mp_src_addr_offset_get(const uint8_t * p_frame);
+
+/**
+ * @brief Gets the offset of the first byte after the addressing fields in MHR.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame.
+ *
+ * @returns  Offset in bytes of the first byte after the addressing fields in MHR.
+ */
+uint8_t nrf_802154_frame_parser_mp_addressing_end_offset_get(const uint8_t * p_frame);
+
+/**
+ * @brief Gets the offset of the security control field in the multipurpose frame.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame.
+ *
+ * @returns  Offset in bytes of the security control field, including one byte of the frame length.
+ * @returns  Zero if the security control cannot be retrieved (that is, security is not enabled).
+ *
+ */
+uint8_t nrf_802154_frame_parser_mp_sec_ctrl_offset_get(const uint8_t * p_frame);
+
+/**
+ * @brief Gets the key identifier field in the multipurpose frame.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame.
+ *
+ * @returns  Pointer to the first byte of the key identifier field in @p p_frame.
+ * @returns  NULL if the key identifier cannot be retrieved (that is, security is not enabled).
+ *
+ */
+uint8_t nrf_802154_frame_parser_mp_key_id_offset_get(const uint8_t * p_frame);
+
+/**
+ * @brief Gets the offset of the IE header field in the multipurpose frame.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame.
+ *
+ * @returns  Offset in bytes of the IE header field, including one byte of the frame length.
+ * @returns  Zero if the IE header cannot be retrieved (that is, the IE header is not present).
+ *
+ */
+uint8_t nrf_802154_frame_parser_mp_ie_header_offset_get(const uint8_t * p_frame);
+
+/**
+ * @brief Gets the security control field in the multipurpose frame.
+ *
+ * @param[in]   p_frame   Pointer to a multipurpose frame.
+ *
+ * @returns  Pointer to the first byte of the security control field in @p p_frame.
+ * @returns  NULL if the security control cannot be retrieved (that is, security is not enabled).
+ *
+ */
+const uint8_t * nrf_802154_frame_parser_mp_sec_ctrl_get(const uint8_t * p_frame);
 #endif // NRF_802154_FRAME_PARSER_H

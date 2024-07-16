@@ -337,6 +337,417 @@ bool nrf_802154_frame_parser_ar_bit_is_set(const uint8_t * p_frame)
     return (p_frame[ACK_REQUEST_OFFSET] & ACK_REQUEST_BIT) ? true : false;
 }
 
+static bool is_long_frame(const uint8_t * p_frame)
+{
+    return (p_frame[MP_LONG_FRAME_OFFSET] & MP_LONG_FRAME_MASK) ? true: false;
+}
+
+static bool is_mp_frame(const uint8_t * p_frame)
+{
+    return (p_frame[FRAME_TYPE_OFFSET] & FRAME_TYPE_MASK) == FRAME_TYPE_MULTIPURPOSE;
+}
+
+static uint8_t mp_addressing_offset_get(const uint8_t * p_frame)
+{
+    if (nrf_802154_frame_parser_mp_dsn_suppress_bit_is_set(p_frame))
+    {
+        return PHR_SIZE + FCF_SIZE;
+    }
+    else
+    {
+        return PHR_SIZE + FCF_SIZE + DSN_SIZE;
+    }
+}
+
+static bool mp_src_addr_is_present(const uint8_t * p_frame)
+{
+    return (p_frame[MP_SRC_ADDR_TYPE_OFFSET] & MP_SRC_ADDR_TYPE_MASK) != MP_SRC_ADDR_TYPE_NONE;
+}
+
+static bool mp_dst_addr_is_present(const uint8_t * p_frame)
+{
+    return (p_frame[MP_DEST_ADDR_TYPE_OFFSET] & MP_DEST_ADDR_TYPE_MASK) != MP_DEST_ADDR_TYPE_NONE;
+}
+
+static uint8_t mp_src_addr_size_get(const uint8_t * p_frame)
+{
+    switch (p_frame[MP_SRC_ADDR_TYPE_OFFSET] & MP_SRC_ADDR_TYPE_MASK)
+    {
+        case MP_SRC_ADDR_TYPE_NONE:
+            return 0;
+
+        case MP_SRC_ADDR_TYPE_SHORT:
+            return SHORT_ADDRESS_SIZE;
+
+        case MP_SRC_ADDR_TYPE_EXTENDED:
+            return EXTENDED_ADDRESS_SIZE;
+
+        default:
+            return NRF_802154_FRAME_PARSER_INVALID_OFFSET;
+    }
+}
+
+static uint8_t mp_dst_addr_size_get(const uint8_t * p_frame)
+{
+    switch (p_frame[MP_DEST_ADDR_TYPE_OFFSET] & MP_DEST_ADDR_TYPE_MASK)
+    {
+        case MP_DEST_ADDR_TYPE_NONE:
+            return 0;
+
+        case MP_DEST_ADDR_TYPE_SHORT:
+            return SHORT_ADDRESS_SIZE;
+
+        case MP_DEST_ADDR_TYPE_EXTENDED:
+            return EXTENDED_ADDRESS_SIZE;
+
+        default:
+            return NRF_802154_FRAME_PARSER_INVALID_OFFSET;
+    }
+}
+
+static bool mp_dst_panid_is_present(const uint8_t * p_frame)
+{
+    return (p_frame[MP_DST_PANID_PRESENT_OFFSET] & MP_DST_PANID_PRESENT_BIT) ? true: false;
+}
+
+static bool mp_security_is_enabled(const uint8_t * p_frame)
+{
+    return p_frame[MP_SECURITY_ENABLED_OFFSET] & MP_SECURITY_ENABLED_BIT ? true : false;
+}
+
+static uint8_t mp_security_offset_get(const uint8_t * p_frame)
+{
+    uint8_t dst_addr_offset  = nrf_802154_frame_parser_mp_dst_addr_offset_get(p_frame);
+    uint8_t dst_panid_offset = nrf_802154_frame_parser_mp_dst_panid_offset_get(p_frame);
+    uint8_t dst_addr_size    = mp_dst_addr_size_get(p_frame);
+    uint8_t src_addr_offset  = nrf_802154_frame_parser_mp_src_addr_offset_get(p_frame);
+    uint8_t src_addr_size    = src_addr_size_get(p_frame);
+
+    if (mp_src_addr_is_present(p_frame))
+    {
+        if ((src_addr_size == NRF_802154_FRAME_PARSER_INVALID_OFFSET) ||
+            (src_addr_offset == NRF_802154_FRAME_PARSER_INVALID_OFFSET))
+        {
+            return NRF_802154_FRAME_PARSER_INVALID_OFFSET;
+        }
+
+        return src_addr_offset + src_addr_size;
+    }
+    else if (dst_addr_offset)
+    {
+        if (dst_addr_size == NRF_802154_FRAME_PARSER_INVALID_OFFSET)
+        {
+            return NRF_802154_FRAME_PARSER_INVALID_OFFSET;
+        }
+
+        return dst_addr_offset + dst_addr_size;
+    }
+    else if (dst_panid_offset)
+    {
+        return dst_panid_offset + PAN_ID_SIZE;
+    }
+    else
+    {
+        return mp_addressing_offset_get(p_frame);
+    }
+}
+
+static uint8_t mp_key_id_size_get(const uint8_t * p_frame)
+{
+    switch (*nrf_802154_frame_parser_mp_sec_ctrl_get(p_frame) & KEY_ID_MODE_MASK)
+    {
+        case KEY_ID_MODE_1:
+            return KEY_ID_MODE_1_SIZE;
+
+        case KEY_ID_MODE_2:
+            return KEY_ID_MODE_2_SIZE;
+
+        case KEY_ID_MODE_3:
+            return KEY_ID_MODE_3_SIZE;
+
+        default:
+            return 0;
+    }
+}
+
+static uint8_t mp_ie_offset_get(const uint8_t * p_frame)
+{
+    uint8_t security_offset = mp_security_offset_get(p_frame);
+    uint8_t key_id_offset   = nrf_802154_frame_parser_mp_key_id_offset_get(p_frame);
+
+    if (!mp_security_is_enabled(p_frame))
+    {
+        if (security_offset == NRF_802154_FRAME_PARSER_INVALID_OFFSET)
+        {
+            return NRF_802154_FRAME_PARSER_INVALID_OFFSET;
+        }
+
+        return security_offset;
+    }
+    else
+    {
+        if (key_id_offset == NRF_802154_FRAME_PARSER_INVALID_OFFSET)
+        {
+            return NRF_802154_FRAME_PARSER_INVALID_OFFSET;
+        }
+
+        return key_id_offset + mp_key_id_size_get(p_frame);
+    }
+}
+
+bool nrf_802154_frame_parser_is_mp_frame(const uint8_t * p_frame)
+{
+    return (p_frame[FRAME_TYPE_OFFSET] & FRAME_TYPE_MASK) == FRAME_TYPE_MULTIPURPOSE;
+}
+
+bool nrf_802154_frame_parser_is_mp_long_frame(const uint8_t * p_frame)
+{
+    return (p_frame[MP_LONG_FRAME_OFFSET] & MP_LONG_FRAME_MASK) ? true: false;
+}
+
+bool nrf_802154_frame_parser_mp_dst_addr_is_extended(const uint8_t * p_frame)
+{
+    return (p_frame[MP_DEST_ADDR_TYPE_OFFSET] & MP_DEST_ADDR_TYPE_MASK) == MP_DEST_ADDR_TYPE_EXTENDED;
+}
+
+bool nrf_802154_frame_parser_mp_src_addr_is_extended(const uint8_t * p_frame)
+{
+    return (p_frame[MP_SRC_ADDR_TYPE_OFFSET] & MP_SRC_ADDR_TYPE_MASK) == MP_SRC_ADDR_TYPE_EXTENDED;
+}
+
+bool nrf_802154_frame_parser_mp_src_addr_is_short(const uint8_t * p_frame)
+{
+    return (p_frame[MP_SRC_ADDR_TYPE_OFFSET] & MP_SRC_ADDR_TYPE_MASK) == MP_SRC_ADDR_TYPE_SHORT;
+}
+
+bool nrf_802154_frame_parser_mp_dsn_suppress_bit_is_set(const uint8_t * p_frame)
+{
+    return (p_frame[MP_DSN_SUPPRESS_OFFSET] & MP_DSN_SUPPRESS_BIT) ? true : false;
+}
+
+bool nrf_802154_frame_parser_mp_ie_present_bit_is_set(const uint8_t * p_frame)
+{
+    return (p_frame[MP_IE_PRESENT_OFFSET] & MP_IE_PRESENT_BIT) ? true : false;
+}
+
+bool nrf_802154_frame_parser_mp_ar_bit_is_set(const uint8_t * p_frame)
+{
+    return (p_frame[MP_ACK_REQUEST_OFFSET] & MP_ACK_REQUEST_BIT) ? true : false;
+}
+
+uint8_t nrf_802154_frame_parser_mp_dst_panid_offset_get(const uint8_t * p_frame)
+{
+    if (mp_dst_panid_is_present(p_frame))
+    {
+        return mp_addressing_offset_get(p_frame);
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+uint8_t nrf_802154_frame_parser_mp_dst_addr_offset_get(const uint8_t * p_frame)
+{
+    uint8_t panid_offset = nrf_802154_frame_parser_mp_dst_panid_offset_get(p_frame);
+
+    if (mp_dst_addr_is_present(p_frame))
+    {
+        return (panid_offset == 0) ? mp_addressing_offset_get(p_frame) : panid_offset + PAN_ID_SIZE;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+uint8_t nrf_802154_frame_parser_mp_dst_addr_end_offset_get(const uint8_t * p_frame)
+{
+    uint8_t offset        = mp_addressing_offset_get(p_frame);
+    uint8_t dst_addr_size = mp_dst_addr_size_get(p_frame);
+
+    if (!is_long_frame(p_frame))
+    {
+        // Do not process the short multipurpose frame.
+        return NRF_802154_FRAME_PARSER_INVALID_OFFSET;
+    }
+
+    if (dst_addr_size == NRF_802154_FRAME_PARSER_INVALID_OFFSET)
+    {
+        return NRF_802154_FRAME_PARSER_INVALID_OFFSET;
+    }
+
+    if (mp_dst_panid_is_present(p_frame))
+    {
+        offset += PAN_ID_SIZE;
+    }
+
+    offset += dst_addr_size;
+
+    return offset;
+}
+
+uint8_t nrf_802154_frame_parser_mp_src_addr_offset_get(const uint8_t * p_frame)
+{
+    uint8_t dst_panid_offset = nrf_802154_frame_parser_mp_dst_panid_offset_get(p_frame);
+    uint8_t dst_addr_offset  = nrf_802154_frame_parser_mp_dst_addr_offset_get(p_frame);
+    uint8_t dst_addr_size    = dst_addr_size_get(p_frame);
+
+    if (mp_src_addr_is_present(p_frame))
+    {
+        if (dst_addr_offset)
+        {
+            if (dst_addr_size == NRF_802154_FRAME_PARSER_INVALID_OFFSET)
+            {
+                return NRF_802154_FRAME_PARSER_INVALID_OFFSET;
+            }
+
+            return dst_addr_offset + dst_addr_size;
+        }
+        else if (dst_panid_offset)
+        {
+            return dst_panid_offset + PAN_ID_SIZE;
+        }
+        else
+        {
+            return mp_addressing_offset_get(p_frame);
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+uint8_t nrf_802154_frame_parser_mp_addressing_end_offset_get(const uint8_t * p_frame)
+{
+    return mp_security_offset_get(p_frame);
+}
+
+uint8_t nrf_802154_frame_parser_mp_sec_ctrl_offset_get(const uint8_t * p_frame)
+{
+    if (mp_security_is_enabled(p_frame))
+    {
+        return mp_security_offset_get(p_frame);
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+uint8_t nrf_802154_frame_parser_mp_key_id_offset_get(const uint8_t * p_frame)
+{
+    uint8_t sec_ctrl_offset = nrf_802154_frame_parser_mp_sec_ctrl_offset_get(p_frame);
+
+    if (sec_ctrl_offset == 0)
+    {
+        return 0;
+    }
+
+    if (NRF_802154_FRAME_PARSER_INVALID_OFFSET == sec_ctrl_offset)
+    {
+        return NRF_802154_FRAME_PARSER_INVALID_OFFSET;
+    }
+
+    if (p_frame[sec_ctrl_offset] & FRAME_COUNTER_SUPPRESS_BIT)
+    {
+        return sec_ctrl_offset + SECURITY_CONTROL_SIZE;
+    }
+    else
+    {
+        return sec_ctrl_offset + SECURITY_CONTROL_SIZE + FRAME_COUNTER_SIZE;
+    }
+}
+
+uint8_t nrf_802154_frame_parser_mp_ie_header_offset_get(const uint8_t * p_frame)
+{
+    if (nrf_802154_frame_parser_mp_ie_present_bit_is_set(p_frame))
+    {
+        return ie_offset_get(p_frame);
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+const uint8_t * nrf_802154_frame_parser_mp_sec_ctrl_get(const uint8_t * p_frame)
+{
+    uint8_t sec_ctrl_offset = nrf_802154_frame_parser_mp_sec_ctrl_offset_get(p_frame);
+
+    return ((sec_ctrl_offset == 0) || (NRF_802154_FRAME_PARSER_INVALID_OFFSET == sec_ctrl_offset)) ?
+           NULL : &p_frame[sec_ctrl_offset];
+}
+
+static bool nrf_802154_frame_parser_mp_mhr_parse(const uint8_t                      * p_frame,
+                                                 nrf_802154_frame_parser_mhr_data_t * p_fields)
+{
+    uint8_t offset               = mp_addressing_offset_get(p_frame);
+    bool    is_dst_panid_present = mp_dst_panid_is_present(p_frame);
+
+    if (is_dst_panid_present)
+    {
+        p_fields->p_dst_panid = &p_frame[offset];
+        offset               += PAN_ID_SIZE;
+    }
+    else
+    {
+        p_fields->p_dst_panid = NULL;
+    }
+
+    if (mp_dst_addr_is_present(p_frame))
+    {
+        p_fields->p_dst_addr    = &p_frame[offset];
+        p_fields->dst_addr_size = mp_dst_addr_size_get(p_frame);
+        offset                 += (p_fields->dst_addr_size);
+
+        if (p_fields->dst_addr_size == NRF_802154_FRAME_PARSER_INVALID_OFFSET)
+        {
+            return false;
+        }
+    }
+    else
+    {
+        p_fields->p_dst_addr    = NULL;
+        p_fields->dst_addr_size = 0;
+    }
+
+    if (is_dst_panid_present)
+    {
+        p_fields->p_src_panid = p_fields->p_dst_panid;
+    }
+
+    if (mp_src_addr_is_present(p_frame))
+    {
+        p_fields->p_src_addr    = &p_frame[offset];
+        p_fields->src_addr_size = mp_src_addr_size_get(p_frame);
+        offset                 += (p_fields->src_addr_size);
+
+        if (p_fields->src_addr_size == NRF_802154_FRAME_PARSER_INVALID_OFFSET)
+        {
+            return false;
+        }
+    }
+    else
+    {
+        p_fields->p_src_addr    = NULL;
+        p_fields->src_addr_size = 0;
+    }
+
+    p_fields->addressing_end_offset = offset;
+
+    if (mp_security_is_enabled(p_frame))
+    {
+        p_fields->p_sec_ctrl = &p_frame[offset];
+    }
+    else
+    {
+        p_fields->p_sec_ctrl = NULL;
+    }
+
+    return true;
+}
 /***************************************************************************************************
  * @section Offset functions
  **************************************************************************************************/
@@ -573,8 +984,8 @@ const uint8_t * nrf_802154_frame_parser_src_addr_get(const uint8_t * p_frame,
     }
 }
 
-bool nrf_802154_frame_parser_mhr_parse(const uint8_t                      * p_frame,
-                                       nrf_802154_frame_parser_mhr_data_t * p_fields)
+static bool nrf_802154_frame_parser_non_mp_mhr_parse(const uint8_t                      * p_frame,
+                                                     nrf_802154_frame_parser_mhr_data_t * p_fields)
 {
     uint8_t offset               = addressing_offset_get(p_frame);
     bool    is_dst_panid_present = dst_panid_is_present(p_frame);
@@ -651,6 +1062,19 @@ bool nrf_802154_frame_parser_mhr_parse(const uint8_t                      * p_fr
     }
 
     return true;
+}
+
+bool nrf_802154_frame_parser_mhr_parse(const uint8_t                      * p_frame,
+                                       nrf_802154_frame_parser_mhr_data_t * p_fields)
+{
+    if (is_mp_frame(p_frame))
+    {
+        return nrf_802154_frame_parser_mp_mhr_parse(p_frame, p_fields);
+    }
+    else
+    {
+        return nrf_802154_frame_parser_non_mp_mhr_parse(p_frame, p_fields);
+    }
 }
 
 const uint8_t * nrf_802154_frame_parser_sec_ctrl_get(const uint8_t * p_frame)
