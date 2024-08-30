@@ -140,6 +140,7 @@ static uint32_t sPendingEvents;
 
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
 static uint32_t         sMacFrameCounter;
+static uint32_t         sPrevMacFrameCounter;
 static uint8_t          sKeyId;
 static otMacKeyMaterial sPrevKey;
 static otMacKeyMaterial sCurrKey;
@@ -189,6 +190,8 @@ static void dataInit(void)
     }
 
     memset(&sAckFrame, 0, sizeof(sAckFrame));
+
+    sPrevMacFrameCounter = 0;
 }
 
 static void convertShortAddress(uint8_t *aTo, uint16_t aFrom)
@@ -273,29 +276,34 @@ static void txAckProcessSecurity(uint8_t *aAckFrame)
 
     if (keyId == sKeyId)
     {
-        key = &sCurrKey;
+        key              = &sCurrKey;
+        sAckFrameCounter = sMacFrameCounter++;
     }
     else if (keyId == sKeyId - 1)
     {
-        key = &sPrevKey;
+        key              = &sPrevKey;
+        sAckFrameCounter = sPrevMacFrameCounter++;
     }
     else if (keyId == sKeyId + 1)
     {
         key = &sNextKey;
+        // Openthread does not maintain future frame counter.
+        // Mac frame counter would be overwritten after key rotation leading to
+        // frames being dropped due to counter value lower than in acks.
+        sAckFrameCounter = 0;
     }
     else
     {
         otEXPECT(false);
     }
 
-    sAckFrameCounter    = sMacFrameCounter;
     sAckKeyId           = keyId;
     sAckedWithSecEnhAck = true;
 
     ackFrame.mInfo.mTxInfo.mAesKey = key;
 
     otMacFrameSetKeyId(&ackFrame, keyId);
-    otMacFrameSetFrameCounter(&ackFrame, sMacFrameCounter++);
+    otMacFrameSetFrameCounter(&ackFrame, sAckFrameCounter);
 
     otMacFrameProcessTransmitAesCcm(&ackFrame, &sExtAddress);
 
@@ -1308,10 +1316,11 @@ void otPlatRadioSetMacKey(otInstance             *aInstance,
 
     CRITICAL_REGION_ENTER();
 
-    sKeyId   = aKeyId;
-    sPrevKey = *aPrevKey;
-    sCurrKey = *aCurrKey;
-    sNextKey = *aNextKey;
+    sKeyId               = aKeyId;
+    sPrevKey             = *aPrevKey;
+    sCurrKey             = *aCurrKey;
+    sNextKey             = *aNextKey;
+    sPrevMacFrameCounter = sMacFrameCounter;
 
     CRITICAL_REGION_EXIT();
 }
