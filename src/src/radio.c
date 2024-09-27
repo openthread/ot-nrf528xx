@@ -508,9 +508,14 @@ otError otPlatRadioReceive(otInstance *aInstance, uint8_t aChannel)
 }
 
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
-otError otPlatRadioReceiveAt(otInstance *aInstance, uint8_t aChannel, uint32_t aStart, uint32_t aDuration)
+otError otPlatRadioReceiveAt(otInstance *aInstance,
+                             uint8_t     aChannel,
+                             uint32_t    aStart,
+                             uint32_t    aDuration,
+                             uint8_t     aSlotId)
 {
     OT_UNUSED_VARIABLE(aInstance);
+    OT_UNUSED_VARIABLE(aSlotId);
 
     bool result;
 
