@@ -45,6 +45,13 @@ else()
     )
 endif()
 
+option(RTT_BUFFER_SIZE "sets the RTT up buffer size")
+if(RTT_BUFFER_SIZE)
+    target_compile_options(jlinkrtt PRIVATE
+        -DSEGGER_RTT_CONFIG_BUFFER_SIZE_UP=${RTT_BUFFER_SIZE}
+    )
+endif()
+
 target_compile_options(jlinkrtt PRIVATE
     -DSEGGER_RTT_CONFIG_H=\"${PROJECT_SOURCE_DIR}/third_party/NordicSemiconductor/segger_rtt/SEGGER_RTT_Conf.h\"
     -DUSE_APP_CONFIG=1
