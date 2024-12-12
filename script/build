@@ -41,7 +41,7 @@ OT_SRCDIR="$(pwd)"
 readonly OT_SRCDIR
 
 OT_OPTIONS=(
-    "-DCMAKE_BUILD_TYPE=MinSizeRel"
+    "-DCMAKE_BUILD_TYPE=Debug"
     "-DBUILD_TESTING=OFF"
     "-DOT_PLATFORM=external"
     "-DOT_SLAAC=ON"
