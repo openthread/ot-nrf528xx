@@ -661,6 +661,11 @@ void nrf_802154_cca_cfg_get(nrf_802154_cca_cfg_t * p_cca_cfg)
 }
 
 #if NRF_802154_CSMA_CA_ENABLED
+void nrf_802154_max_num_csma_ca_backoffs_set(uint8_t max_num_nb)
+{
+    nrf_802154_csma_ca_max_num_csma_ca_backoffs_set(max_num_nb);
+}
+
 #if NRF_802154_USE_RAW_API
 
 void nrf_802154_transmit_csma_ca_raw(const uint8_t * p_data)
