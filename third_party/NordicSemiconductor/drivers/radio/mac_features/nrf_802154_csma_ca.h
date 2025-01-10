@@ -45,6 +45,15 @@
  */
 
 /**
+ * @brief Sets the maximum number of backoffs that the CSMA-CA algorithm will attempt before declaring a channel access failure.
+ *
+ * @note If the @p max_num_nb is set to 0, the backoff mechanism will be skipped and the CCA will still be performed once.
+ *
+ * @param[in]  max_num_nb  The maximum number of CSMA-CA backoffs.
+ */
+void nrf_802154_csma_ca_max_num_csma_ca_backoffs_set(uint8_t max_num_nb);
+
+/**
  * @brief Starts the CSMA-CA procedure for the transmission of a given frame.
  *
  * If the CSMA-CA procedure is successful and the frame is transmitted,

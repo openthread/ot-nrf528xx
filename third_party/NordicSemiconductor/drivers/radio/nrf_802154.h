@@ -1174,6 +1174,16 @@ void nrf_802154_cca_cfg_get(nrf_802154_cca_cfg_t * p_cca_cfg);
  * @{
  */
 #if NRF_802154_CSMA_CA_ENABLED
+
+/**
+ * @brief Sets the maximum number of backoffs that the CSMA-CA algorithm will attempt before declaring a channel access failure.
+ *
+ * @note If the @p max_num_nb is set to 0, the backoff mechanism will be skipped and the CCA will still be performed once.
+ *
+ * @param[in]  max_num_nb  The maximum number of CSMA-CA backoffs.
+ */
+void nrf_802154_max_num_csma_ca_backoffs_set(uint8_t max_num_nb);
+
 #if NRF_802154_USE_RAW_API
 
 /**
