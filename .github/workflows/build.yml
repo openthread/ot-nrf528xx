@@ -43,14 +43,14 @@ concurrency:
 jobs:
 
   pretty:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Bootstrap
       run: |
-        sudo rm /etc/apt/sources.list.d/* && sudo apt-get update
+        sudo apt-get update
         sudo apt-get --no-install-recommends install -y clang-format-14 shellcheck
         python3 -m pip install yapf==0.29.0
         sudo snap install shfmt
@@ -60,7 +60,7 @@ jobs:
 
   arm-gcc:
     name: arm-gcc-${{ matrix.gcc_ver }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         include:
@@ -86,18 +86,10 @@ jobs:
     - name: Bootstrap
       run: |
         cd /tmp
-        sudo rm /etc/apt/sources.list.d/* && sudo apt-get update
+        sudo apt-get update
         sudo apt-get --no-install-recommends install -y build-essential lib32z1 ninja-build
-        wget --tries 4 --no-check-certificate --quiet ${{ matrix.gcc_download_url }} -O gcc-arm.tar.bz2
-        tar xjf gcc-arm.tar.bz2
-        sudo apt-get remove cmake
-        sudo apt-get purge --auto-remove cmake
-        wget http://www.cmake.org/files/v3.10/cmake-3.10.3.tar.gz
-        tar xf cmake-3.10.3.tar.gz
-        cd cmake-3.10.3
-        ./configure
-        sudo make install
-        cmake --version | grep 3.10.3
+        wget --tries 4 --no-check-certificate --quiet ${{ matrix.gcc_download_url }} -O gcc-arm
+        tar xjf gcc-arm
     - name: Build
       run: |
         export PATH=/tmp/${{ matrix.gcc_extract_dir }}/bin:$PATH
