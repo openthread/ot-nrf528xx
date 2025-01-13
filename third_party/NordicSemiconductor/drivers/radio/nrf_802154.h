@@ -245,6 +245,21 @@ uint8_t nrf_802154_ccaedthres_from_dbm_calculate(int8_t dbm);
 uint32_t nrf_802154_first_symbol_timestamp_get(uint32_t end_timestamp, uint8_t psdu_length);
 
 /**
+ * @brief  Converts the timestamp of the frame's end to the timestamp of the start of its PHR.
+ *
+ * This function calculates the time when the first symbol of the PHR is at the local antenna. Note
+ * that this time is equivalent to the end of the frame's SFD and RMARKER as defined in'
+ * IEEE 802.15.4-2020, Section 6.9.1.
+ *
+ * @param[in]  end_timestamp  Timestamp of the end of the last symbol in the frame,
+ *                            in microseconds.
+ * @param[in]  psdu_length    Number of bytes in the frame PSDU.
+ *
+ * @return  Timestamp of the start of the PHR of a given frame, in microseconds.
+ */
+uint64_t nrf_802154_timestamp_end_to_phr_convert(uint64_t end_timestamp, uint8_t psdu_length);
+
+/**
  * @}
  * @defgroup nrf_802154_transitions Functions to request FSM transitions and check current state
  * @{

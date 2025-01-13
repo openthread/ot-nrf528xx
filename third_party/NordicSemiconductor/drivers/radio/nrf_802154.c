@@ -200,6 +200,13 @@ uint32_t nrf_802154_first_symbol_timestamp_get(uint32_t end_timestamp, uint8_t p
     return end_timestamp - (frame_symbols * PHY_US_PER_SYMBOL);
 }
 
+uint64_t nrf_802154_timestamp_end_to_phr_convert(uint64_t end_timestamp, uint8_t psdu_length)
+{
+    uint32_t frame_symbols = (PHR_SIZE + psdu_length) * PHY_SYMBOLS_PER_OCTET;
+
+    return end_timestamp - (frame_symbols * PHY_US_PER_SYMBOL);
+}
+
 void nrf_802154_init(void)
 {
     nrf_802154_ack_data_init();
