@@ -446,6 +446,23 @@ void otPlatDiagAlarmCallback(otInstance *aInstance)
     }
 }
 
+otError otPlatDiagRadioTransmitCarrier(otInstance *aInstance, bool aEnable)
+{
+    otError error = OT_ERROR_NONE;
+
+    if (aEnable)
+    {
+        otEXPECT_ACTION(startCarrierTransmision(), error = OT_ERROR_FAILED);
+    }
+    else
+    {
+        otPlatRadioReceive(aInstance, sChannel);
+    }
+
+exit:
+    return error;
+}
+
 otError otPlatDiagGpioSet(uint32_t aGpio, bool aValue)
 {
     otError error = OT_ERROR_NONE;
