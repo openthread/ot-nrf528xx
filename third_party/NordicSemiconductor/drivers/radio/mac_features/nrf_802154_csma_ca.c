@@ -53,6 +53,7 @@
 
 static uint8_t m_nb;                    ///< The number of times the CSMA-CA algorithm was required to back off while attempting the current transmission.
 static uint8_t m_be;                    ///< Backoff exponent, which is related to how many backoff periods a device shall wait before attempting to assess a channel.
+static uint8_t m_max_nb = NRF_802154_CSMA_CA_MAX_CSMA_BACKOFFS;  ///< The maximum number of backoffs that the CSMA-CA algorithm will attempt before declaring a channel access failure.
 
 static const uint8_t    * mp_data;      ///< Pointer to a buffer containing PHR and PSDU of the frame being transmitted.
 static nrf_802154_timer_t m_timer;      ///< Timer used to back off during CSMA-CA procedure.
@@ -96,7 +97,7 @@ static void procedure_stop(void)
  */
 static void notify_busy_channel(bool result)
 {
-    if (!result && (m_nb >= (NRF_802154_CSMA_CA_MAX_CSMA_BACKOFFS - 1)))
+    if (!result && ((m_max_nb == 0) || (m_nb >= (m_max_nb - 1))))
     {
         nrf_802154_notify_transmit_failed(mp_data, NRF_802154_TX_ERROR_BUSY_CHANNEL);
     }
@@ -138,7 +139,7 @@ static void frame_transmit(void * p_context)
  */
 static void random_backoff_start(void)
 {
-    uint8_t backoff_periods = nrf_802154_random_get() % (1 << m_be);
+    uint8_t backoff_periods = (m_max_nb == 0)? 0: (nrf_802154_random_get() % (1 << m_be));
 
     m_timer.callback  = frame_transmit;
     m_timer.p_context = NULL;
@@ -163,7 +164,7 @@ static bool channel_busy(void)
             m_be++;
         }
 
-        if (m_nb < NRF_802154_CSMA_CA_MAX_CSMA_BACKOFFS)
+        if (m_nb < m_max_nb)
         {
             random_backoff_start();
             result = false;
@@ -177,6 +178,11 @@ static bool channel_busy(void)
     }
 
     return result;
+}
+
+void nrf_802154_csma_ca_max_num_csma_ca_backoffs_set(uint8_t max_num_nb)
+{
+    m_max_nb = max_num_nb;
 }
 
 void nrf_802154_csma_ca_start(const uint8_t * p_data)

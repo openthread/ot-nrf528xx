@@ -557,6 +557,7 @@ otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aFrame)
 
         if (aFrame->mInfo.mTxInfo.mCsmaCaEnabled)
         {
+            nrf_802154_max_num_csma_ca_backoffs_set(aFrame->mInfo.mTxInfo.mMaxCsmaBackoffs);
             nrf_802154_transmit_csma_ca_raw(&aFrame->mPsdu[-1]);
         }
         else
