@@ -522,6 +522,17 @@ otError otPlatRadioReceiveAt(otInstance *aInstance, uint8_t aChannel, uint32_t a
 }
 #endif
 
+#if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
+static bool ShouldProcessKeyId(otRadioFrame *aFrame)
+{
+    return
+#if OPENTHREAD_CONFIG_WAKEUP_COORDINATOR_ENABLE
+        otMacFrameIsKeyIdMode2(aFrame) ||
+#endif
+        otMacFrameIsKeyIdMode1(aFrame);
+}
+#endif
+
 otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aFrame)
 {
     bool    result = true;
@@ -536,10 +547,12 @@ otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aFrame)
     }
 
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
-    if (otMacFrameIsSecurityEnabled(aFrame) && otMacFrameIsKeyIdMode1(aFrame) && !aFrame->mInfo.mTxInfo.mIsARetx)
+    if (otMacFrameIsSecurityEnabled(aFrame) && ShouldProcessKeyId(aFrame) && !aFrame->mInfo.mTxInfo.mIsHeaderUpdated &&
+        !aFrame->mInfo.mTxInfo.mIsARetx)
     {
         otMacFrameSetKeyId(aFrame, sKeyId);
         otMacFrameSetFrameCounter(aFrame, sMacFrameCounter++);
+        aFrame->mInfo.mTxInfo.mIsHeaderUpdated = true;
     }
 
     if (aFrame->mInfo.mTxInfo.mTxDelay != 0)
@@ -1257,7 +1270,7 @@ void nrf_802154_tx_started(const uint8_t *aFrame)
 #endif // OPENTHREAD_CONFIG_TIME_SYNC_ENABLE
 
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
-    otEXPECT(otMacFrameIsSecurityEnabled(&sTransmitFrame) && otMacFrameIsKeyIdMode1(&sTransmitFrame) &&
+    otEXPECT(otMacFrameIsSecurityEnabled(&sTransmitFrame) && ShouldProcessKeyId(&sTransmitFrame) &&
              !sTransmitFrame.mInfo.mTxInfo.mIsSecurityProcessed);
 
     sTransmitFrame.mInfo.mTxInfo.mAesKey = &sCurrKey;
