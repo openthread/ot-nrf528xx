@@ -868,17 +868,7 @@ void nrf5RadioProcess(otInstance *aInstance)
     {
         if (sReceivedFrames[i].mPsdu != NULL)
         {
-#if OPENTHREAD_CONFIG_DIAG_ENABLE
-
-            if (otPlatDiagModeGet())
-            {
-                otPlatDiagRadioReceiveDone(aInstance, &sReceivedFrames[i], OT_ERROR_NONE);
-            }
-            else
-#endif
-            {
-                otPlatRadioReceiveDone(aInstance, &sReceivedFrames[i], OT_ERROR_NONE);
-            }
+            otPlatRadioReceiveDone(aInstance, &sReceivedFrames[i], OT_ERROR_NONE);
 
             uint8_t *bufferAddress   = &sReceivedFrames[i].mPsdu[-1];
             sReceivedFrames[i].mPsdu = NULL;
@@ -890,18 +880,8 @@ void nrf5RadioProcess(otInstance *aInstance)
     {
         resetPendingEvent(kPendingEventFrameTransmitted);
 
-#if OPENTHREAD_CONFIG_DIAG_ENABLE
-
-        if (otPlatDiagModeGet())
-        {
-            otPlatDiagRadioTransmitDone(aInstance, &sTransmitFrame, OT_ERROR_NONE);
-        }
-        else
-#endif
-        {
-            otRadioFrame *ackPtr = (sAckFrame.mPsdu == NULL) ? NULL : &sAckFrame;
-            otPlatRadioTxDone(aInstance, &sTransmitFrame, ackPtr, OT_ERROR_NONE);
-        }
+        otRadioFrame *ackPtr = (sAckFrame.mPsdu == NULL) ? NULL : &sAckFrame;
+        otPlatRadioTxDone(aInstance, &sTransmitFrame, ackPtr, OT_ERROR_NONE);
 
         if (sAckFrame.mPsdu != NULL)
         {
@@ -913,52 +893,19 @@ void nrf5RadioProcess(otInstance *aInstance)
     if (isPendingEventSet(kPendingEventChannelAccessFailure))
     {
         resetPendingEvent(kPendingEventChannelAccessFailure);
-
-#if OPENTHREAD_CONFIG_DIAG_ENABLE
-
-        if (otPlatDiagModeGet())
-        {
-            otPlatDiagRadioTransmitDone(aInstance, &sTransmitFrame, OT_ERROR_CHANNEL_ACCESS_FAILURE);
-        }
-        else
-#endif
-        {
-            otPlatRadioTxDone(aInstance, &sTransmitFrame, NULL, OT_ERROR_CHANNEL_ACCESS_FAILURE);
-        }
+        otPlatRadioTxDone(aInstance, &sTransmitFrame, NULL, OT_ERROR_CHANNEL_ACCESS_FAILURE);
     }
 
     if (isPendingEventSet(kPendingEventInvalidOrNoAck))
     {
         resetPendingEvent(kPendingEventInvalidOrNoAck);
-
-#if OPENTHREAD_CONFIG_DIAG_ENABLE
-
-        if (otPlatDiagModeGet())
-        {
-            otPlatDiagRadioTransmitDone(aInstance, &sTransmitFrame, OT_ERROR_NO_ACK);
-        }
-        else
-#endif
-        {
-            otPlatRadioTxDone(aInstance, &sTransmitFrame, NULL, OT_ERROR_NO_ACK);
-        }
+        otPlatRadioTxDone(aInstance, &sTransmitFrame, NULL, OT_ERROR_NO_ACK);
     }
 
     if (isPendingEventSet(kPendingEventReceiveFailed))
     {
         resetPendingEvent(kPendingEventReceiveFailed);
-
-#if OPENTHREAD_CONFIG_DIAG_ENABLE
-
-        if (otPlatDiagModeGet())
-        {
-            otPlatDiagRadioReceiveDone(aInstance, NULL, sReceiveError);
-        }
-        else
-#endif
-        {
-            otPlatRadioReceiveDone(aInstance, NULL, sReceiveError);
-        }
+        otPlatRadioReceiveDone(aInstance, NULL, sReceiveError);
     }
 
     if (isPendingEventSet(kPendingEventEnergyDetected))
