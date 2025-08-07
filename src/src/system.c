@@ -59,8 +59,7 @@ extern bool gPlatformPseudoResetWasRequested;
 
 void __cxa_pure_virtual(void)
 {
-    while (1)
-        ;
+    while (1);
 }
 
 void otSysInit(int argc, char *argv[])
