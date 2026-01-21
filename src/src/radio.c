@@ -542,10 +542,10 @@ otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aFrame)
         otMacFrameSetFrameCounter(aFrame, sMacFrameCounter++);
     }
 
-    if (aFrame->mInfo.mTxInfo.mTxDelay != 0)
+    if (aFrame->mInfo.mTxInfo.mTxTime != 0)
     {
-        if (!nrf_802154_transmit_raw_at(&aFrame->mPsdu[-1], true, aFrame->mInfo.mTxInfo.mTxDelayBaseTime,
-                                        aFrame->mInfo.mTxInfo.mTxDelay, aFrame->mChannel))
+        if (!nrf_802154_transmit_raw_at(&aFrame->mPsdu[-1], true, aFrame->mInfo.mTxInfo.mTxTime - SAFE_DELTA,
+                                        SAFE_DELTA, aFrame->mChannel))
         {
             error = OT_ERROR_INVALID_STATE;
         }
