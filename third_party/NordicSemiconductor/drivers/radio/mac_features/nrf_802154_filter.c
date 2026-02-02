@@ -151,6 +151,31 @@ static nrf_802154_rx_error_t dst_addressing_end_offset_get_2006(const uint8_t * 
 {
     nrf_802154_rx_error_t result;
 
+    if (frame_type == FRAME_TYPE_MULTIPURPOSE)
+    {
+        if (nrf_802154_frame_parser_is_mp_long_frame(p_data))
+        {
+            uint8_t end_offset = nrf_802154_frame_parser_mp_dst_addr_end_offset_get(p_data);
+
+            if (end_offset == NRF_802154_FRAME_PARSER_INVALID_OFFSET)
+            {
+                result = NRF_802154_RX_ERROR_INVALID_FRAME;
+            }
+            else
+            {
+                *p_num_bytes = end_offset;
+                result       = NRF_802154_RX_ERROR_NONE;
+            }
+        }
+        else
+        {
+            // Do not process short multipurpose frame.
+            result = NRF_802154_RX_ERROR_INVALID_FRAME;
+        }
+
+        return result;
+    }
+
     switch (p_data[DEST_ADDR_TYPE_OFFSET] & DEST_ADDR_TYPE_MASK)
     {
         case DEST_ADDR_TYPE_SHORT:
