@@ -55,6 +55,32 @@ After a successful build, the `elf` files can be found in `<path-to-ot-nrf528xx>
 $ arm-none-eabi-objcopy -O ihex build/bin/ot-cli-ftd ot-cli-ftd.hex
 ```
 
+### Building using Docker
+
+Alternatively, you can build using a Docker image instead of nRF Command Line Tools.
+
+This can be useful in case of CI/CD builds or to build locally without installing the dependencies.
+
+Example for building the firmware with USB CDC ACM support:
+
+```bash
+cd <path-to-ot-nrf528xx>
+docker run --rm -u $(id -u):$(id -g) -v $(pwd):/workdir/project coderbyheart/fw-nrfconnect-nrf-docker:v1.8-branch ./script/build nrf52833 USB_trans -DOT_THREAD_VERSION=1.2
+```
+
+After a successful build, the `elf` files can be converted through the same container image.
+
+For example:
+
+```bash
+cd <path-to-ot-nrf528xx>
+docker run --rm -u $(id -u):$(id -g) -v $(pwd):/workdir/project coderbyheart/fw-nrfconnect-nrf-docker:v1.8-branch arm-none-eabi-objcopy -O ihex build/bin/ot-rcp build/bin/ot-rcp.hex
+```
+
+See [Build NCS application firmware images using Docker][build-ncs-using-docker] for general instructions on using Docker to build an nRF Connect SDK based application.
+
+[build-ncs-using-docker]: https://devzone.nordicsemi.com/guides/nrf-connect-sdk-guides/b/getting-started/posts/build-ncs-application-firmware-images-using-docker
+
 ### USB CDC ACM support
 
 You can build the libraries with support for the native USB CDC ACM as a serial transport. To do so, build the firmware with the following parameter:
