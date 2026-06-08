@@ -257,7 +257,7 @@ uint32_t nrf_802154_first_symbol_timestamp_get(uint32_t end_timestamp, uint8_t p
  *
  * @return  Timestamp of the start of the PHR of a given frame, in microseconds.
  */
-uint64_t nrf_802154_timestamp_end_to_phr_convert(uint64_t end_timestamp, uint8_t psdu_length);
+uint32_t nrf_802154_timestamp_end_to_phr_convert(uint32_t end_timestamp, uint8_t psdu_length);
 
 /**
  * @}
