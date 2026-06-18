@@ -167,6 +167,25 @@ static int8_t GetTransmitPowerForChannel(uint8_t aChannel)
     return power;
 }
 
+static uint64_t GetRxTimestamp(uint32_t aTime, uint8_t aLength)
+{
+    uint64_t now = nrf5AlarmGetCurrentTime();
+
+    // aTime is a wrapping 32-bit integer, meaning it could naturally equal 0
+    // (NRF_802154_NO_TIMESTAMP) even when a valid timestamp exists.  However,
+    // the probability of a genuine timestamp hitting exactly 0 is extremely
+    // low, so falling back to the current timestamp in this rare edge case is
+    // an acceptable risk.
+    if (aTime == NRF_802154_NO_TIMESTAMP)
+    {
+        aTime = (uint32_t)now;
+    }
+
+    aTime = nrf_802154_timestamp_end_to_phr_convert(aTime, aLength);
+
+    return now + (uint64_t)(int32_t)(aTime - (uint32_t)now);
+}
+
 static void dataInit(void)
 {
     sDisabled = true;
@@ -985,7 +1004,7 @@ void nrf_802154_received_timestamp_raw(uint8_t *p_data, int8_t power, uint8_t lq
 #if !NRF_802154_TX_STARTED_NOTIFY_ENABLED
 #error "NRF_802154_TX_STARTED_NOTIFY_ENABLED is required!"
 #endif
-    receivedFrame->mInfo.mRxInfo.mTimestamp = nrf_802154_timestamp_end_to_phr_convert(time, p_data[0]);
+    receivedFrame->mInfo.mRxInfo.mTimestamp = GetRxTimestamp(time, p_data[0]);
 
     sAckedWithFramePending = false;
 
@@ -1118,7 +1137,7 @@ void nrf_802154_transmitted_timestamp_raw(const uint8_t *aFrame,
     }
     else
     {
-        sAckFrame.mInfo.mRxInfo.mTimestamp = nrf_802154_timestamp_end_to_phr_convert(ack_time, aAckPsdu[0]);
+        sAckFrame.mInfo.mRxInfo.mTimestamp = GetRxTimestamp(ack_time, aAckPsdu[0]);
         sAckFrame.mPsdu                    = &aAckPsdu[1];
         sAckFrame.mLength                  = aAckPsdu[0];
         sAckFrame.mInfo.mRxInfo.mRssi      = aPower;
