@@ -281,6 +281,8 @@ static void txAckProcessSecurity(uint8_t *aAckFrame)
     otRadioFrame      ackFrame;
     otMacKeyMaterial *key = NULL;
     uint8_t           keyId;
+    uint8_t           keyIndex;
+    uint8_t           currKeyIndex;
 
     sAckedWithSecEnhAck = false;
     otEXPECT(aAckFrame[SECURITY_ENABLED_OFFSET] & SECURITY_ENABLED_BIT);
@@ -292,18 +294,22 @@ static void txAckProcessSecurity(uint8_t *aAckFrame)
     keyId = otMacFrameGetKeyId(&ackFrame);
 
     otEXPECT(otMacFrameIsKeyIdMode1(&ackFrame) && keyId != 0);
+    otEXPECT(sKeyId != 0);
 
-    if (keyId == sKeyId)
+    keyIndex     = keyId - 1;
+    currKeyIndex = sKeyId - 1;
+
+    if (keyIndex == currKeyIndex)
     {
         key              = &sCurrKey;
         sAckFrameCounter = sMacFrameCounter++;
     }
-    else if (keyId == sKeyId - 1)
+    else if (keyIndex == ((currKeyIndex + 127U) & 0x7fU))
     {
         key              = &sPrevKey;
         sAckFrameCounter = sPrevMacFrameCounter++;
     }
-    else if (keyId == sKeyId + 1)
+    else if (keyIndex == ((currKeyIndex + 1U) & 0x7fU))
     {
         key = &sNextKey;
         // Openthread does not maintain future frame counter.
