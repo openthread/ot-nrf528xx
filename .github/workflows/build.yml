@@ -28,6 +28,9 @@
 
 name: Build
 
+permissions:
+  contents: read
+
 on:
   push:
     branches-ignore:
@@ -48,6 +51,7 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         submodules: recursive
+        persist-credentials: false
     - name: Bootstrap
       run: |
         sudo apt-get update
@@ -83,6 +87,7 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         submodules: recursive
+        persist-credentials: false
     - name: Bootstrap
       run: |
         cd /tmp
