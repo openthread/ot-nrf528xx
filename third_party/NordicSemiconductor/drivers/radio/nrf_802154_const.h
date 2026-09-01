@@ -124,6 +124,39 @@
 #define SRC_ADDR_OFFSET_SHORT_DST    8                                            ///< Offset of the source address in the Data frame if the destination address is short.
 #define SRC_ADDR_OFFSET_EXTENDED_DST 14                                           ///< Offset of the source address in the Data frame if the destination address is extended.
 
+#define MP_LONG_FRAME_OFFSET         1                                            ///< Byte containing the long frame control bit in the multipurpose frame.
+#define MP_LONG_FRAME_MASK           (1 << 3)                                     ///< Long frame control bit in the multipurpose frame.
+
+#define MP_DEST_ADDR_TYPE_OFFSET     1                                            ///< Byte containing the destination address type in the multipurpose frame.
+#define MP_DEST_ADDR_TYPE_NONE       0x00                                         ///< Bits containing a not-present destination address type in the multipurpose frame.
+#define MP_DEST_ADDR_TYPE_SHORT      (2 << 4)                                     ///< Bits containing the short destination address type in the multipurpose frame.
+#define MP_DEST_ADDR_TYPE_EXTENDED   (3 << 4)                                     ///< Bits containing the extended destination address type in the multipurpose frame.
+#define MP_DEST_ADDR_TYPE_MASK       (3 << 4)                                     ///< Mask of bits containing the destination address type in the multipurpose frame.
+
+#define MP_SRC_ADDR_TYPE_OFFSET      1                                            ///< Byte containing the source address type in the multipurpose frame.
+#define MP_SRC_ADDR_TYPE_NONE        0x00                                         ///< Bits containing a not-present source address type in the multipurpose frame.
+#define MP_SRC_ADDR_TYPE_SHORT       (2 << 6)                                     ///< Bits containing the short source address type in the multipurpose frame.
+#define MP_SRC_ADDR_TYPE_EXTENDED    (3 << 6)                                     ///< Bits containing the extended source address type in the multipurpose frame.
+#define MP_SRC_ADDR_TYPE_MASK        (3 << 6)                                     ///< Mask of bits containing the source address type in the multipurpose frame.
+
+#define MP_DST_PANID_PRESENT_OFFSET  2                                            ///< Byte containing the PAN ID present bit in the multipurpose frame.
+#define MP_DST_PANID_PRESENT_BIT     (1 << 0)                                     ///< PAN ID present bit in the multipurpose frame.
+
+#define MP_SECURITY_ENABLED_OFFSET   2                                            ///< Byte containing the security enabled bit in the multipurpose frame.
+#define MP_SECURITY_ENABLED_BIT      (1 << 1)                                     ///< Security enabled bit in the multipurpose frame.
+
+#define MP_DSN_SUPPRESS_OFFSET       2                                            ///< Byte containing the sequence number suppression bit in the multipurpose frame.
+#define MP_DSN_SUPPRESS_BIT          (1 << 2)                                     ///< Sequence number suppression bit in the multipurpose frame.
+
+#define MP_FRAME_PENDING_OFFSET      2                                            ///< Byte containing the the frame pending bit in the multipurpose frame.
+#define MP_FRAME_PENDING_BIT         (1 << 3)                                     ///< Frame pending bit in the multipurpose frame.
+
+#define MP_ACK_REQUEST_OFFSET        2                                            ///< Byte containing the ACK request bit in the multipurpose frame.
+#define MP_ACK_REQUEST_BIT           (1 << 6)                                     ///< ACK request bit in the multipurpose frame.
+
+#define MP_IE_PRESENT_OFFSET         2                                            ///< Byte containning the IE present bit in the multipurpose frame.
+#define MP_IE_PRESENT_BIT            (1 << 7)                                     ///< IE present bit in the multipurpose frame.
+
 #define DSN_SIZE                     1                                            ///< Size of the Sequence Number field.
 #define FCF_SIZE                     2                                            ///< Size of the FCF field.
 #define FCS_SIZE                     2                                            ///< Size of the FCS field.
