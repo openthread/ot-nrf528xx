@@ -533,7 +533,12 @@ static void channel_set(uint8_t channel)
  */
 static bool ack_is_requested(const uint8_t * p_frame)
 {
-    return nrf_802154_frame_parser_ar_bit_is_set(p_frame);
+    if (nrf_802154_frame_parser_is_mp_frame(p_frame))
+    {
+        return nrf_802154_frame_parser_mp_ar_bit_is_set(p_frame);
+    } else {
+        return nrf_802154_frame_parser_ar_bit_is_set(p_frame);
+   }
 }
 
 /***************************************************************************************************
