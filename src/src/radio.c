@@ -567,8 +567,15 @@ otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aFrame)
     if (!aFrame->mInfo.mTxInfo.mIsHeaderUpdated && !aFrame->mInfo.mTxInfo.mIsSecurityProcessed &&
         otMacFrameIsSecurityEnabled(aFrame) && otMacFrameIsKeyIdMode1(aFrame))
     {
+        uint32_t frameCounter;
+
+        // `sMacFrameCounter` is also modified in the radio interrupt context (`txAckProcessSecurity()`).
+        CRITICAL_REGION_ENTER();
+        frameCounter = sMacFrameCounter++;
+        CRITICAL_REGION_EXIT();
+
         otMacFrameSetKeyId(aFrame, sKeyId);
-        otMacFrameSetFrameCounter(aFrame, sMacFrameCounter++);
+        otMacFrameSetFrameCounter(aFrame, frameCounter);
         aFrame->mInfo.mTxInfo.mIsHeaderUpdated = true;
     }
 
