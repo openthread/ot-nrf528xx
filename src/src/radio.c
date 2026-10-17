@@ -541,7 +541,6 @@ otError otPlatRadioReceiveAt(otInstance *aInstance, uint8_t aChannel, uint32_t a
 
     nrf_802154_tx_power_set(GetTransmitPowerForChannel(aChannel));
     result = nrf_802154_receive_at(aStart - SAFE_DELTA, SAFE_DELTA, aDuration, aChannel);
-    clearPendingEvents();
 
     return result ? OT_ERROR_NONE : OT_ERROR_FAILED;
 }
