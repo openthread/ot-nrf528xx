@@ -56,7 +56,6 @@
  * to detect that frame and in case of TX - 50us that accounts for a delay of yet unknown origin.
  */
 #define TX_SETUP_TIME 160u ///< Time needed to prepare TX procedure [us]. It does not include TX ramp-up time.
-#define RX_SETUP_TIME 110u ///< Time needed to prepare RX procedure [us]. It does not include RX ramp-up time.
 
 /**
  * @brief States of delayed operations.
@@ -101,10 +100,11 @@ static uint8_t         m_tx_channel;       ///< Channel number on which transmis
  * A delayed RX request (@c m_dly_op_state[RSCH_DLY_RX]) is stored separately from an ongoing
  * RX window (@c m_dly_rx_window_state).
  */
-static nrf_802154_timer_t m_timeout_timer; ///< Timer for handling the end of the ongoing RX window.
-static uint8_t            m_rx_channel;    ///< Channel number on which reception should be performed.
-static uint32_t           m_rx_start;      ///< Start time of the requested RX window [us].
-static uint32_t           m_rx_timeout;    ///< Duration of the requested RX window [us].
+static nrf_802154_timer_t m_timeout_timer;  ///< Timer for handling the end of the ongoing RX window.
+static nrf_802154_timer_t m_rx_start_timer; ///< Timer for starting the requested RX window when its timeslot cannot be requested in time.
+static uint8_t            m_rx_channel;     ///< Channel number on which reception should be performed.
+static uint32_t           m_rx_start;       ///< Start time of the requested RX window [us].
+static uint32_t           m_rx_timeout;     ///< Duration of the requested RX window [us].
 
 /**
  * @brief State of delayed operations.
@@ -453,6 +453,21 @@ static void rx_timeslot_started_callout(void)
     }
 }
 
+/**
+ * Start the requested RX window at its start time, when its timeslot could not be requested in time.
+ *
+ * @param[in]  p_context  Not used.
+ */
+static void rx_start_timer_fired(void * p_context)
+{
+    (void)p_context;
+
+    if (dly_op_state_get(RSCH_DLY_RX) == DELAYED_TRX_OP_STATE_PENDING)
+    {
+        rx_timeslot_started_callout();
+    }
+}
+
 bool nrf_802154_delayed_trx_transmit(const uint8_t * p_data,
                                      bool            cca,
                                      uint32_t        t0,
@@ -507,6 +522,8 @@ bool nrf_802154_delayed_trx_receive(uint32_t t0,
         (void)nrf_802154_rsch_delayed_timeslot_cancel(RSCH_DLY_RX);
     }
 
+    nrf_802154_timer_sched_remove(&m_rx_start_timer, NULL);
+
     now = nrf_802154_timer_sched_time_get();
 
     if (!nrf_802154_timer_sched_time_is_in_future(now, start, timeout))
@@ -543,19 +560,32 @@ bool nrf_802154_delayed_trx_receive(uint32_t t0,
     m_rx_start   = start;
     m_rx_timeout = timeout;
 
-    dt -= RX_SETUP_TIME;
-    dt -= RX_RAMP_UP_TIME;
-
+    // The requested start time is when the radio starts entering reception on the requested
+    // channel, so the timeslot is not requested ahead of it to account for RX setup and ramp-up.
     timeslot_length = timeout + nrf_802154_rx_duration_get(MAX_PACKET_SIZE, true);
 
     result = dly_op_request(t0, dt, timeslot_length, RSCH_DLY_RX);
 
     if (!result)
     {
-        // The window start is too close or has already passed (e.g. the window has already
-        // started), so the window starts immediately.
+        // The timeslot cannot be requested in time, because the window start is too close or has
+        // already passed (e.g. the window has already started). The window starts at its start
+        // time, or immediately if it has already passed.
         dly_op_state_set(RSCH_DLY_RX, DELAYED_TRX_OP_STATE_STOPPED, DELAYED_TRX_OP_STATE_PENDING);
-        rx_timeslot_started_callout();
+
+        if (nrf_802154_timer_sched_time_is_in_future(nrf_802154_timer_sched_time_get(), t0, dt))
+        {
+            m_rx_start_timer.t0        = t0;
+            m_rx_start_timer.dt        = dt;
+            m_rx_start_timer.callback  = rx_start_timer_fired;
+            m_rx_start_timer.p_context = NULL;
+
+            nrf_802154_timer_sched_add(&m_rx_start_timer, true);
+        }
+        else
+        {
+            rx_timeslot_started_callout();
+        }
 
         // A failure to start the window is notified by the callout.
         result = true;
@@ -619,6 +649,8 @@ bool nrf_802154_delayed_trx_receive_cancel(void)
     {
         (void)nrf_802154_rsch_delayed_timeslot_cancel(RSCH_DLY_RX);
     }
+
+    nrf_802154_timer_sched_remove(&m_rx_start_timer, NULL);
 
     bool was_running;
 
