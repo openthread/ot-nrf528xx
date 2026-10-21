@@ -561,10 +561,15 @@ otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aFrame)
     }
 
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
-    if (otMacFrameIsSecurityEnabled(aFrame) && otMacFrameIsKeyIdMode1(aFrame) && !aFrame->mInfo.mTxInfo.mIsARetx)
+    // The key ID and frame counter are only set if the frame security is not processed and the header is not updated
+    // yet (e.g. by the upper layer, or by a previous transmission of the frame), so that the existing key ID and frame
+    // counter are preserved otherwise.
+    if (!aFrame->mInfo.mTxInfo.mIsHeaderUpdated && !aFrame->mInfo.mTxInfo.mIsSecurityProcessed &&
+        otMacFrameIsSecurityEnabled(aFrame) && otMacFrameIsKeyIdMode1(aFrame))
     {
         otMacFrameSetKeyId(aFrame, sKeyId);
         otMacFrameSetFrameCounter(aFrame, sMacFrameCounter++);
+        aFrame->mInfo.mTxInfo.mIsHeaderUpdated = true;
     }
 
     if (aFrame->mInfo.mTxInfo.mTxDelay != 0)
@@ -1201,8 +1206,11 @@ void nrf_802154_tx_started(const uint8_t *aFrame)
     assert(aFrame == sTransmitPsdu);
     OT_UNUSED_VARIABLE(aFrame);
 
+    // Header IEs must not be updated once the frame security is processed, as that would invalidate the MIC.
+    otEXPECT(!sTransmitFrame.mInfo.mTxInfo.mIsSecurityProcessed);
+
 #if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
-    if ((sCslPeriod > 0) && !sTransmitFrame.mInfo.mTxInfo.mIsARetx)
+    if (sCslPeriod > 0)
     {
         otMacFrameSetCslIe(&sTransmitFrame, (uint16_t)sCslPeriod, getCslPhase());
     }
@@ -1229,8 +1237,7 @@ void nrf_802154_tx_started(const uint8_t *aFrame)
 #endif // OPENTHREAD_CONFIG_TIME_SYNC_ENABLE
 
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
-    otEXPECT(otMacFrameIsSecurityEnabled(&sTransmitFrame) && otMacFrameIsKeyIdMode1(&sTransmitFrame) &&
-             !sTransmitFrame.mInfo.mTxInfo.mIsSecurityProcessed);
+    otEXPECT(otMacFrameIsSecurityEnabled(&sTransmitFrame) && otMacFrameIsKeyIdMode1(&sTransmitFrame));
 
     sTransmitFrame.mInfo.mTxInfo.mAesKey = &sCurrKey;
 
