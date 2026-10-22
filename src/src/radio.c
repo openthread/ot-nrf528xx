@@ -102,9 +102,8 @@ static otRadioFrame sTransmitFrame;
 static uint8_t      sTransmitPsdu[OT_RADIO_FRAME_MAX_SIZE + 1];
 
 #if OPENTHREAD_CONFIG_MAC_HEADER_IE_SUPPORT
-static otExtAddress  sExtAddress;
-static otRadioIeInfo sTransmitIeInfo;
-static otInstance   *sInstance = NULL;
+static otExtAddress sExtAddress;
+static otInstance  *sInstance = NULL;
 #endif
 
 static otRadioFrame sAckFrame;
@@ -192,9 +191,6 @@ static void dataInit(void)
 
     sDefaultTxPower      = OT_RADIO_POWER_INVALID;
     sTransmitFrame.mPsdu = sTransmitPsdu + 1;
-#if OPENTHREAD_CONFIG_MAC_HEADER_IE_SUPPORT
-    sTransmitFrame.mInfo.mTxInfo.mIeInfo = &sTransmitIeInfo;
-#endif
 
     sReceiveError = OT_ERROR_NONE;
 
@@ -1226,20 +1222,8 @@ void nrf_802154_tx_started(const uint8_t *aFrame)
 
     // Update IE and secure transmit frame
 #if OPENTHREAD_CONFIG_TIME_SYNC_ENABLE
-    if (sTransmitFrame.mInfo.mTxInfo.mIeInfo->mTimeIeOffset != 0)
+    if (otMacFrameUpdateTimeIe(&sTransmitFrame, otPlatTimeGet()))
     {
-        uint8_t *timeIe = sTransmitFrame.mPsdu + sTransmitFrame.mInfo.mTxInfo.mIeInfo->mTimeIeOffset;
-        uint64_t time   = otPlatTimeGet() + sTransmitFrame.mInfo.mTxInfo.mIeInfo->mNetworkTimeOffset;
-
-        *timeIe = sTransmitFrame.mInfo.mTxInfo.mIeInfo->mTimeSyncSeq;
-
-        *(++timeIe) = (uint8_t)(time & 0xff);
-        for (uint8_t i = 1; i < sizeof(uint64_t); i++)
-        {
-            time        = time >> 8;
-            *(++timeIe) = (uint8_t)(time & 0xff);
-        }
-
         processSecurity = true;
     }
 #endif // OPENTHREAD_CONFIG_TIME_SYNC_ENABLE
