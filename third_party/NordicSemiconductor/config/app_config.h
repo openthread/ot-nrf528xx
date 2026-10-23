@@ -105,6 +105,13 @@
 #define APP_USBD_STRING_SERIAL g_extern_serial_number
 #endif
 
+#ifndef APP_USBD_STRINGS_USER
+#define APP_USBD_STRINGS_USER                                                  \
+    X(APP_USBD_STRING_ID_RCP_IFACE, , APP_USBD_STRING_DESC("ThreadGroup:RCP:Spinel")) \
+    X(APP_USBD_STRING_ID_NCP_IFACE, , APP_USBD_STRING_DESC("ThreadGroup:NCP:Spinel")) \
+    X(APP_USBD_STRING_ID_CLI_IFACE, , APP_USBD_STRING_DESC("OpenThread:CLI"))
+#endif
+
 #ifndef APP_USBD_CONFIG_LOG_ENABLED
 #define APP_USBD_CONFIG_LOG_ENABLED 0
 #endif

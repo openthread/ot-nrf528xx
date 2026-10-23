@@ -771,6 +771,13 @@ static ret_code_t cdc_acm_event_handler(app_usbd_class_inst_t const *  p_inst,
 }
 
 
+/**
+ * @brief Weak hook returning the string descriptor index for the CDC ACM interfaces.
+ *
+ * If not defined by the application, no string descriptor is used (index 0).
+ */
+extern __WEAK uint8_t app_usbd_cdc_acm_iface_string_idx_get(void);
+
 static bool cdc_acm_feed_descriptors(app_usbd_class_descriptor_ctx_t * p_ctx,
                                      app_usbd_class_inst_t const     * p_inst,
                                      uint8_t                         * p_buff,
@@ -779,6 +786,8 @@ static bool cdc_acm_feed_descriptors(app_usbd_class_descriptor_ctx_t * p_ctx,
     static uint8_t ifaces    = 0;
     ifaces = app_usbd_class_iface_count_get(p_inst);
     app_usbd_cdc_acm_t const * p_cdc_acm = cdc_acm_get(p_inst);
+    uint8_t iface_str_idx = (app_usbd_cdc_acm_iface_string_idx_get != NULL) ?
+                            app_usbd_cdc_acm_iface_string_idx_get() : 0x00;
 
     APP_USBD_CLASS_DESCRIPTOR_BEGIN(p_ctx, p_buff, max_size);
 
@@ -790,7 +799,7 @@ static bool cdc_acm_feed_descriptors(app_usbd_class_descriptor_ctx_t * p_ctx,
     APP_USBD_CLASS_DESCRIPTOR_WRITE(APP_USBD_CDC_COMM_CLASS); // bFunctionClass
     APP_USBD_CLASS_DESCRIPTOR_WRITE(APP_USBD_CDC_SUBCLASS_ACM); // bFunctionSubClass
     APP_USBD_CLASS_DESCRIPTOR_WRITE(p_cdc_acm->specific.inst.protocol); // bFunctionProtocol
-    APP_USBD_CLASS_DESCRIPTOR_WRITE(0x00); // iFunction
+    APP_USBD_CLASS_DESCRIPTOR_WRITE(iface_str_idx); // iFunction
 
     static uint8_t i = 0;
 
@@ -825,7 +834,7 @@ static bool cdc_acm_feed_descriptors(app_usbd_class_descriptor_ctx_t * p_ctx,
             ASSERT(0);
         }
 
-        APP_USBD_CLASS_DESCRIPTOR_WRITE(0x00); // iInterface
+        APP_USBD_CLASS_DESCRIPTOR_WRITE(iface_str_idx); // iInterface
 
         if (p_cdc_acm->specific.inst.comm_interface == app_usbd_class_iface_number_get(p_cur_iface))
         {
