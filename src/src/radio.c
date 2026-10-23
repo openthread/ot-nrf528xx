@@ -490,6 +490,11 @@ otError otPlatRadioDisable(otInstance *aInstance)
 
     sDisabled = true;
 
+#if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
+    // Disabling the radio cancels any scheduled or ongoing receive window.
+    nrf_802154_receive_at_cancel();
+#endif
+
 exit:
     return error;
 }
@@ -535,15 +540,22 @@ otError otPlatRadioReceive(otInstance *aInstance, uint8_t aChannel)
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
 otError otPlatRadioReceiveAt(otInstance *aInstance, uint8_t aChannel, uint32_t aStart, uint32_t aDuration)
 {
-    OT_UNUSED_VARIABLE(aInstance);
+    otError error = OT_ERROR_NONE;
+    bool    result;
 
-    bool result;
+    otEXPECT_ACTION(otPlatRadioIsEnabled(aInstance), error = OT_ERROR_INVALID_STATE);
 
+    // The driver replaces a scheduled window which has not started yet, and updates an ongoing
+    // window without interrupting the reception. Pending events are cleared before the request,
+    // since the driver may end an ongoing window synchronously (e.g. when the new window has
+    // already ended), which sets a pending Sleep event that must not be cleared.
+    clearPendingEvents();
     nrf_802154_tx_power_set(GetTransmitPowerForChannel(aChannel));
     result = nrf_802154_receive_at(aStart - SAFE_DELTA, SAFE_DELTA, aDuration, aChannel);
-    clearPendingEvents();
+    otEXPECT_ACTION(result, error = OT_ERROR_FAILED);
 
-    return result ? OT_ERROR_NONE : OT_ERROR_FAILED;
+exit:
+    return error;
 }
 #endif
 

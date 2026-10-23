@@ -321,8 +321,16 @@ bool nrf_802154_receive(void);
  * or the requested reception timeslot is denied, @ref nrf_drv_radio802154_receive_failed is called
  * with the @ref NRF_802154_RX_ERROR_DELAYED_TIMESLOT_DENIED argument.
  *
- * If the requested reception time is in the past, the function returns false and does not
- * schedule reception.
+ * If the requested reception start time is too close or in the past, the reception starts
+ * immediately. If the requested reception window has already ended, the function returns false
+ * and does not schedule reception.
+ *
+ * A subsequent call to this function replaces a scheduled reception which has not started yet.
+ * If a scheduled reception has already started, it is not interrupted: the reception continues
+ * until the new reception window starts (if the new window starts before the ongoing one ends),
+ * and the new window dictates the channel and the end of the reception. If the new window has
+ * already ended, the ongoing reception ends immediately (after the frame being received, if any)
+ * and the function returns true.
  *
  * A scheduled reception can be cancelled by a call to @ref nrf_802154_receive_at_cancel.
  *

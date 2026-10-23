@@ -70,6 +70,15 @@ typedef enum
 } delayed_trx_op_state_t;
 
 /**
+ * @brief States of the delayed RX window.
+ */
+typedef enum
+{
+    DELAYED_RX_WINDOW_STATE_STOPPED, ///< No RX window ongoing.
+    DELAYED_RX_WINDOW_STATE_ONGOING, ///< RX window ongoing (after its timeslot has started).
+} delayed_rx_window_state_t;
+
+/**
  * @brief RX delayed operation frame data.
  */
 typedef struct
@@ -88,14 +97,29 @@ static uint8_t         m_tx_channel;       ///< Channel number on which transmis
 
 /**
  * @brief RX delayed operation configuration.
+ *
+ * A delayed RX request (@c m_dly_op_state[RSCH_DLY_RX]) is stored separately from an ongoing
+ * RX window (@c m_dly_rx_window_state).
  */
-static nrf_802154_timer_t m_timeout_timer; ///< Timer for delayed RX timeout handling.
+static nrf_802154_timer_t m_timeout_timer; ///< Timer for handling the end of the ongoing RX window.
 static uint8_t            m_rx_channel;    ///< Channel number on which reception should be performed.
+static uint32_t           m_rx_start;      ///< Start time of the requested RX window [us].
+static uint32_t           m_rx_timeout;    ///< Duration of the requested RX window [us].
 
 /**
  * @brief State of delayed operations.
  */
 static volatile delayed_trx_op_state_t m_dly_op_state[RSCH_DLY_TS_NUM];
+
+/**
+ * @brief State of the ongoing RX window.
+ */
+static volatile delayed_rx_window_state_t m_dly_rx_window_state;
+
+/**
+ * @brief Flag indicating that the channel is being switched at the start of an RX window.
+ */
+static bool m_dly_rx_channel_switching;
 
 /**
  * @brief RX delayed operation frame data.
@@ -133,6 +157,42 @@ static bool dly_rx_state_set(delayed_trx_op_state_t expected_dly_rx_state,
     __DMB();
 
     return true;
+}
+
+/**
+ * Stop the ongoing RX window.
+ *
+ * @retval true   The RX window was ongoing and has been stopped.
+ * @retval false  The RX window was not ongoing.
+ */
+static bool dly_rx_window_stop(void)
+{
+    volatile delayed_rx_window_state_t current_state;
+
+    do
+    {
+        current_state = (delayed_rx_window_state_t)__LDREXB((uint8_t *)&m_dly_rx_window_state);
+
+        if (current_state != DELAYED_RX_WINDOW_STATE_ONGOING)
+        {
+            __CLREX();
+            return false;
+        }
+
+    }
+    while (__STREXB((uint8_t)DELAYED_RX_WINDOW_STATE_STOPPED, (uint8_t *)&m_dly_rx_window_state));
+
+    __DMB();
+
+    return true;
+}
+
+/**
+ * Check if an RX window is ongoing.
+ */
+static bool dly_rx_window_is_ongoing(void)
+{
+    return m_dly_rx_window_state == DELAYED_RX_WINDOW_STATE_ONGOING;
 }
 
 /**
@@ -232,9 +292,7 @@ static void notify_rx_timeout(void * p_context)
 
     nrf_802154_log(EVENT_TRACE_ENTER, FUNCTION_DTRX_RX_TIMEOUT);
 
-    assert(dly_op_state_get(RSCH_DLY_RX) != DELAYED_TRX_OP_STATE_PENDING);
-
-    if (dly_op_state_get(RSCH_DLY_RX) == DELAYED_TRX_OP_STATE_ONGOING)
+    if (dly_rx_window_is_ongoing())
     {
         uint32_t now           = nrf_802154_timer_sched_time_get();
         uint32_t sof_timestamp = m_dly_rx_frame.sof_timestamp;
@@ -256,14 +314,14 @@ static void notify_rx_timeout(void * p_context)
         }
         else
         {
-            if (dly_rx_state_set(DELAYED_TRX_OP_STATE_ONGOING, DELAYED_TRX_OP_STATE_STOPPED))
+            if (dly_rx_window_stop())
             {
                 nrf_802154_notify_receive_failed(NRF_802154_RX_ERROR_DELAYED_TIMEOUT);
             }
 
-            // even if the set operation failed, the delayed RX state
+            // even if the set operation failed, the RX window state
             // should be set to STOPPED from other context anyway
-            assert(dly_op_state_get(RSCH_DLY_RX) == DELAYED_TRX_OP_STATE_STOPPED);
+            assert(!dly_rx_window_is_ongoing());
         }
     }
 
@@ -297,24 +355,35 @@ static void tx_timeslot_started_callback(bool result)
  */
 static void rx_timeslot_started_callback(bool result)
 {
+    dly_op_state_set(RSCH_DLY_RX, DELAYED_TRX_OP_STATE_PENDING, DELAYED_TRX_OP_STATE_STOPPED);
+
     if (result)
     {
-        uint32_t now;
+        if (!dly_rx_window_is_ongoing())
+        {
+            uint32_t now = nrf_802154_timer_sched_time_get();
 
-        dly_op_state_set(RSCH_DLY_RX, DELAYED_TRX_OP_STATE_PENDING, DELAYED_TRX_OP_STATE_ONGOING);
+            m_dly_rx_frame.sof_timestamp = now;
+            m_dly_rx_frame.psdu_length   = 0;
+            m_dly_rx_frame.ack_requested = false;
 
-        now = nrf_802154_timer_sched_time_get();
+            m_dly_rx_window_state = DELAYED_RX_WINDOW_STATE_ONGOING;
+        }
 
-        m_timeout_timer.t0           = now;
-        m_dly_rx_frame.sof_timestamp = now;
-        m_dly_rx_frame.psdu_length   = 0;
-        m_dly_rx_frame.ack_requested = false;
+        // Otherwise the new window continues the ongoing one without interrupting reception.
+        // In both cases, the new window dictates when the reception ends.
+        m_timeout_timer.t0 = m_rx_start;
+        m_timeout_timer.dt = m_rx_timeout;
 
         nrf_802154_timer_sched_add(&m_timeout_timer, true);
     }
     else
     {
-        dly_op_state_set(RSCH_DLY_RX, DELAYED_TRX_OP_STATE_PENDING, DELAYED_TRX_OP_STATE_STOPPED);
+        // An ongoing window kept until the start of this window ends now.
+        if (!nrf_802154_timer_sched_is_running(&m_timeout_timer) && dly_rx_window_stop())
+        {
+            nrf_802154_notify_receive_failed(NRF_802154_RX_ERROR_DELAYED_TIMEOUT);
+        }
 
         nrf_802154_notify_receive_failed(NRF_802154_RX_ERROR_DELAYED_TIMESLOT_DENIED);
     }
@@ -350,10 +419,26 @@ static void tx_timeslot_started_callout(void)
  */
 static void rx_timeslot_started_callout(void)
 {
-    bool result;
+    bool result = true;
 
-    nrf_802154_pib_channel_set(m_rx_channel);
-    result = nrf_802154_request_channel_update();
+    // Skip the channel update only when the window continues an ongoing window on the same
+    // channel, so that reception continues seamlessly.
+    if (!dly_rx_window_is_ongoing() || (nrf_802154_pib_channel_get() != m_rx_channel))
+    {
+        nrf_802154_pib_channel_set(m_rx_channel);
+
+        // Allow restarting the receiver of an ongoing window on the new channel. The frame being
+        // received, if any, is not interrupted.
+        m_dly_rx_channel_switching = true;
+
+        // Make sure the flag is set before the channel update is processed, possibly preempting
+        // this function, and cleared only after it has completed.
+        __DMB();
+        result = nrf_802154_request_channel_update();
+        __DMB();
+
+        m_dly_rx_channel_switching = false;
+    }
 
     if (result)
     {
@@ -410,27 +495,70 @@ bool nrf_802154_delayed_trx_receive(uint32_t t0,
 {
     bool     result;
     uint16_t timeslot_length;
+    uint32_t now;
+    uint32_t start = t0 + dt;
 
-    result = dly_op_state_get(RSCH_DLY_RX) == DELAYED_TRX_OP_STATE_STOPPED;
+    m_timeout_timer.callback  = notify_rx_timeout;
+    m_timeout_timer.p_context = NULL;
 
-    if (result)
+    // A requested window which has not started yet is replaced by the new window.
+    if (dly_rx_state_set(DELAYED_TRX_OP_STATE_PENDING, DELAYED_TRX_OP_STATE_STOPPED))
     {
+        (void)nrf_802154_rsch_delayed_timeslot_cancel(RSCH_DLY_RX);
+    }
 
-        dt -= RX_SETUP_TIME;
-        dt -= RX_RAMP_UP_TIME;
+    now = nrf_802154_timer_sched_time_get();
 
-        timeslot_length = timeout + nrf_802154_rx_duration_get(MAX_PACKET_SIZE, true);
+    if (!nrf_802154_timer_sched_time_is_in_future(now, start, timeout))
+    {
+        // The new window has already ended. Since the new window dictates when the reception ends,
+        // an ongoing window ends now (after the frame being received, if any).
+        result = dly_rx_window_is_ongoing();
 
-        m_timeout_timer.dt        = timeout + RX_RAMP_UP_TIME;
-        m_timeout_timer.callback  = notify_rx_timeout;
-        m_timeout_timer.p_context = NULL;
+        if (result)
+        {
+            m_timeout_timer.t0 = now;
+            m_timeout_timer.dt = 0;
 
-        m_rx_channel = channel;
+            nrf_802154_timer_sched_add(&m_timeout_timer, false);
+        }
 
-        // remove timer in case it was left after abort operation
+        return result;
+    }
+
+    if (dly_rx_window_is_ongoing())
+    {
+        // The ongoing window is not interrupted. If the new window starts before the ongoing window
+        // ends, reception continues until the new window starts. Otherwise, the ongoing window ends
+        // as scheduled.
         nrf_802154_timer_sched_remove(&m_timeout_timer, NULL);
 
-        result = dly_op_request(t0, dt, timeslot_length, RSCH_DLY_RX);
+        if (!nrf_802154_timer_sched_time_is_in_future(start, m_timeout_timer.t0, m_timeout_timer.dt))
+        {
+            nrf_802154_timer_sched_add(&m_timeout_timer, false);
+        }
+    }
+
+    m_rx_channel = channel;
+    m_rx_start   = start;
+    m_rx_timeout = timeout;
+
+    dt -= RX_SETUP_TIME;
+    dt -= RX_RAMP_UP_TIME;
+
+    timeslot_length = timeout + nrf_802154_rx_duration_get(MAX_PACKET_SIZE, true);
+
+    result = dly_op_request(t0, dt, timeslot_length, RSCH_DLY_RX);
+
+    if (!result)
+    {
+        // The window start is too close or has already passed (e.g. the window has already
+        // started), so the window starts immediately.
+        dly_op_state_set(RSCH_DLY_RX, DELAYED_TRX_OP_STATE_STOPPED, DELAYED_TRX_OP_STATE_PENDING);
+        rx_timeslot_started_callout();
+
+        // A failure to start the window is notified by the callout.
+        result = true;
     }
 
     return result;
@@ -485,13 +613,18 @@ bool nrf_802154_delayed_trx_receive_cancel(void)
 {
     bool result;
 
-    result = nrf_802154_rsch_delayed_timeslot_cancel(RSCH_DLY_RX);
+    result = dly_rx_state_set(DELAYED_TRX_OP_STATE_PENDING, DELAYED_TRX_OP_STATE_STOPPED);
+
+    if (result)
+    {
+        (void)nrf_802154_rsch_delayed_timeslot_cancel(RSCH_DLY_RX);
+    }
 
     bool was_running;
 
     nrf_802154_timer_sched_remove(&m_timeout_timer, &was_running);
 
-    m_dly_op_state[RSCH_DLY_RX] = DELAYED_TRX_OP_STATE_STOPPED;
+    m_dly_rx_window_state = DELAYED_RX_WINDOW_STATE_STOPPED;
 
     result = result || was_running;
 
@@ -506,18 +639,22 @@ bool nrf_802154_delayed_trx_abort(nrf_802154_term_t term_lvl, req_originator_t r
     {
         // Ignore if self-request.
     }
-    else if (dly_op_state_get(RSCH_DLY_RX) == DELAYED_TRX_OP_STATE_ONGOING)
+    else if (dly_rx_window_is_ongoing())
     {
         if (term_lvl >= NRF_802154_TERM_802154)
         {
-            if (dly_rx_state_set(DELAYED_TRX_OP_STATE_ONGOING, DELAYED_TRX_OP_STATE_STOPPED))
+            if (dly_rx_window_stop())
             {
                 nrf_802154_notify_receive_failed(NRF_802154_RX_ERROR_DELAYED_ABORTED);
             }
 
-            // even if the set operation failed, the delayed RX state
+            // even if the set operation failed, the RX window state
             // should be set to STOPPED from other context anyway
-            assert(dly_op_state_get(RSCH_DLY_RX) == DELAYED_TRX_OP_STATE_STOPPED);
+            assert(!dly_rx_window_is_ongoing());
+        }
+        else if (m_dly_rx_channel_switching)
+        {
+            // The ongoing window switches the channel: the receiver can be restarted within it.
         }
         else
         {
@@ -530,7 +667,7 @@ bool nrf_802154_delayed_trx_abort(nrf_802154_term_t term_lvl, req_originator_t r
 
 void nrf_802154_delayed_trx_rx_started_hook(const uint8_t * p_frame)
 {
-    if (dly_op_state_get(RSCH_DLY_RX) == DELAYED_TRX_OP_STATE_ONGOING)
+    if (dly_rx_window_is_ongoing())
     {
         m_dly_rx_frame.sof_timestamp = nrf_802154_timer_sched_time_get();
         m_dly_rx_frame.psdu_length   = p_frame[PHR_OFFSET];
