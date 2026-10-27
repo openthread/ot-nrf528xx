@@ -47,20 +47,39 @@
 #include <openthread-system.h>
 #include <utils/code_utils.h>
 #include <utils/uart.h>
+#include <openthread/instance.h>
+#include <openthread/ncp.h>
+#include <openthread/thread.h>
 #include <openthread/platform/alarm-milli.h>
 #include <openthread/platform/diag.h>
 #include <openthread/platform/misc.h>
+#include <openthread/platform/toolchain.h>
 
 #include "platform-nrf5-transport.h"
 
 #include "app_usbd.h"
 #include "app_usbd_serial_num.h"
+#include "app_usbd_string_desc.h"
 #include "nrf_dfu_trigger_usb.h"
 #include "nrf_drv_clock.h"
 #include "nrf_drv_power.h"
 #include "class/cdc/acm/app_usbd_cdc_acm.h"
 
 #if (USB_CDC_AS_SERIAL_TRANSPORT == 1)
+
+OT_TOOL_WEAK void     otNcpHdlcInit(otInstance *aInstance, otNcpHdlcSendCallback aSendCallback);
+OT_TOOL_WEAK uint16_t otThreadGetVersion(void);
+
+uint8_t app_usbd_cdc_acm_iface_string_idx_get(void)
+{
+    if (otNcpHdlcInit != NULL)
+    {
+        return (otThreadGetVersion != NULL) ? (uint8_t)APP_USBD_STRING_ID_NCP_IFACE
+                                            : (uint8_t)APP_USBD_STRING_ID_RCP_IFACE;
+    }
+
+    return (uint8_t)APP_USBD_STRING_ID_CLI_IFACE;
+}
 
 static void cdcAcmUserEventHandler(app_usbd_class_inst_t const *aInstance, app_usbd_cdc_acm_user_event_t aEvent);
 
