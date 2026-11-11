@@ -55,9 +55,8 @@ jobs:
     - name: Bootstrap
       run: |
         sudo apt-get update
-        sudo apt-get --no-install-recommends install -y clang-format-19 shellcheck
+        sudo apt-get --no-install-recommends install -y clang-format-19 shellcheck shfmt
         python3 -m pip install yapf==0.29.0
-        sudo snap install shfmt
     - name: Check
       run: |
         script/make-pretty check
