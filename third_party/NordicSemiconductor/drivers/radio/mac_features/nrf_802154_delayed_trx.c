@@ -56,7 +56,6 @@
  * to detect that frame and in case of TX - 50us that accounts for a delay of yet unknown origin.
  */
 #define TX_SETUP_TIME 160u ///< Time needed to prepare TX procedure [us]. It does not include TX ramp-up time.
-#define RX_SETUP_TIME 110u ///< Time needed to prepare RX procedure [us]. It does not include RX ramp-up time.
 
 /**
  * @brief States of delayed operations.
@@ -543,17 +542,14 @@ bool nrf_802154_delayed_trx_receive(uint32_t t0,
     m_rx_start   = start;
     m_rx_timeout = timeout;
 
-    dt -= RX_SETUP_TIME;
-    dt -= RX_RAMP_UP_TIME;
-
     timeslot_length = timeout + nrf_802154_rx_duration_get(MAX_PACKET_SIZE, true);
 
     result = dly_op_request(t0, dt, timeslot_length, RSCH_DLY_RX);
 
     if (!result)
     {
-        // The window start is too close or has already passed (e.g. the window has already
-        // started), so the window starts immediately.
+        // The window start has already passed (e.g. the window has already started), so the window
+        // starts immediately.
         dly_op_state_set(RSCH_DLY_RX, DELAYED_TRX_OP_STATE_STOPPED, DELAYED_TRX_OP_STATE_PENDING);
         rx_timeslot_started_callout();
 
