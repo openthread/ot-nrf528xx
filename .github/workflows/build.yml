@@ -66,23 +66,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        include:
-          - gcc_ver: 5
-            gcc_download_url: https://developer.arm.com/-/media/Files/downloads/gnu-rm/5_4-2016q3/gcc-arm-none-eabi-5_4-2016q3-20160926-linux.tar.bz2
-            gcc_mirror_url: https://launchpad.net/gcc-arm-embedded/5.0/5-2016-q3-update/+download/gcc-arm-none-eabi-5_4-2016q3-20160926-linux.tar.bz2
-            gcc_extract_dir: gcc-arm-none-eabi-5_4-2016q3
-          - gcc_ver: 6
-            gcc_download_url: https://developer.arm.com/-/media/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2
-            gcc_mirror_url: https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2
-            gcc_extract_dir: gcc-arm-none-eabi-6-2017-q2-update
-          - gcc_ver: 7
-            gcc_download_url: https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2018q2/gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2
-            gcc_mirror_url: https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2018q2/gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2
-            gcc_extract_dir: gcc-arm-none-eabi-7-2018-q2-update
-          - gcc_ver: 9
-            gcc_download_url: https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2019q4/RC2.1/gcc-arm-none-eabi-9-2019-q4-major-x86_64-linux.tar.bz2
-            gcc_mirror_url: https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/9-2019q4/RC2.1/gcc-arm-none-eabi-9-2019-q4-major-x86_64-linux.tar.bz2
-            gcc_extract_dir: gcc-arm-none-eabi-9-2019-q4-major
+        gcc_ver: [5, 6, 7, 9]
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
@@ -90,33 +74,14 @@ jobs:
         persist-credentials: false
     - name: Bootstrap
       env:
-        GCC_DOWNLOAD_URL: ${{ matrix.gcc_download_url }}
-        GCC_MIRROR_URL: ${{ matrix.gcc_mirror_url }}
-        GCC_EXTRACT_DIR: ${{ matrix.gcc_extract_dir }}
+        GCC_VER: ${{ matrix.gcc_ver }}
       run: |
         sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=15 update
-        sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=15 --no-install-recommends install -y build-essential ca-certificates curl lib32z1 ninja-build
-        success=false
-        for url in "${GCC_DOWNLOAD_URL}" "${GCC_MIRROR_URL}"; do
-          rm -rf /tmp/gcc-arm "/tmp/${GCC_EXTRACT_DIR}"
-          if curl --proto '=https' --tlsv1.2 -fsSL --retry 2 --retry-delay 2 --retry-max-time 80 \
-            --connect-timeout 15 --max-time 75 --speed-limit 1048576 --speed-time 15 \
-            -o /tmp/gcc-arm "${url}" \
-            && tar xjf /tmp/gcc-arm -C /tmp; then
-            success=true
-            break
-          fi
-          echo "WARNING: failed to download or extract from ${url}" >&2
-        done
-        rm -f /tmp/gcc-arm
-        if [ "${success}" = false ]; then
-          echo "ERROR: failed to download or extract ARM toolchain" >&2
-          rm -rf "/tmp/${GCC_EXTRACT_DIR:?}"
-          exit 1
-        fi
+        sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=15 --no-install-recommends install -y build-essential bzip2 ca-certificates curl lib32z1 ninja-build xz-utils
+        openthread/script/install-arm-toolchain.sh "${GCC_VER}" "/tmp/arm-gcc-${GCC_VER}"
     - name: Build
       env:
-        GCC_EXTRACT_DIR: ${{ matrix.gcc_extract_dir }}
+        GCC_VER: ${{ matrix.gcc_ver }}
       run: |
-        export PATH="/tmp/${GCC_EXTRACT_DIR}/bin:${PATH}"
+        export PATH="/tmp/arm-gcc-${GCC_VER}/bin:${PATH}"
         script/test
