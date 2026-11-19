@@ -321,9 +321,13 @@ bool nrf_802154_receive(void);
  * or the requested reception timeslot is denied, @ref nrf_drv_radio802154_receive_failed is called
  * with the @ref NRF_802154_RX_ERROR_DELAYED_TIMESLOT_DENIED argument.
  *
- * If the requested reception start time is too close or in the past, the reception starts
- * immediately. If the requested reception window has already ended, the function returns false
- * and does not schedule reception.
+ * The reception is never started before the requested start time (@p t0 + @p dt), which is the
+ * time when the radio starts entering the receive state on @p channel. The caller is expected to
+ * account for the RX setup and ramp-up time.
+ *
+ * If the requested reception start time has passed, the reception starts immediately. If the
+ * requested reception window has already ended, the function returns false and does not
+ * schedule reception.
  *
  * A subsequent call to this function replaces a scheduled reception which has not started yet.
  * If a scheduled reception has already started, it is not interrupted: the reception continues

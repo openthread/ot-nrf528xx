@@ -457,12 +457,14 @@ bool nrf_802154_rsch_delayed_timeslot_request(uint32_t         t0,
 
         result = true;
     }
-    else if (requested_prio_lvl_is_at_least(RSCH_PRIO_MAX) &&
+    else if (((dly_ts_id == RSCH_DLY_RX) || requested_prio_lvl_is_at_least(RSCH_PRIO_MAX)) &&
              nrf_802154_timer_sched_time_is_in_future(now, t0, dt))
     {
         p_dly_ts->prio = prio;
         p_dly_ts->t0   = t0;
         p_dly_ts->dt   = dt;
+
+        all_prec_update();
 
         p_dly_ts->timer.t0        = t0;
         p_dly_ts->timer.dt        = dt;
