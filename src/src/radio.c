@@ -79,6 +79,7 @@
 
 #define RSSI_SETTLE_TIME_US   40           ///< RSSI settle time in microseconds.
 #define SAFE_DELTA            1000         ///< A safe value for the `dt` parameter of delayed operations.
+#define SHR_DURATION_US       160          ///< Duration of the SHR (preamble and SFD) in microseconds.
 
 #define CSL_UNCERT            20           ///< The Uncertainty of the scheduling CSL of transmission by the parent, in ±10 us units.
 
@@ -593,9 +594,11 @@ otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aFrame)
 
     if (aFrame->mInfo.mTxInfo.mTxDelay != 0)
     {
+        // `mTxDelayBaseTime + mTxDelay` points to the end of the SFD, whereas the driver transmits the first symbol of
+        // the SHR at the given time.
         if (!nrf_802154_transmit_raw_at(&aFrame->mPsdu[-1], aFrame->mInfo.mTxInfo.mCsmaCaEnabled,
-                                        aFrame->mInfo.mTxInfo.mTxDelayBaseTime, aFrame->mInfo.mTxInfo.mTxDelay,
-                                        aFrame->mChannel))
+                                        aFrame->mInfo.mTxInfo.mTxDelayBaseTime - SHR_DURATION_US,
+                                        aFrame->mInfo.mTxInfo.mTxDelay, aFrame->mChannel))
         {
             error = OT_ERROR_INVALID_STATE;
         }
