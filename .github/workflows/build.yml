@@ -53,12 +53,9 @@ jobs:
         submodules: recursive
         persist-credentials: false
     - name: Bootstrap
-      timeout-minutes: 10
+      timeout-minutes: 25
       shell: bash ./openthread/script/retry {0}
-      run: |
-        sudo apt-get update
-        sudo apt-get --no-install-recommends install -y clang-format-19 shellcheck shfmt
-        python3 -m pip install --retries 5 --timeout 30 yapf==0.29.0
+      run: ./openthread/script/install-pretty-tools.sh --no-python
     - name: Check
       run: |
         script/make-pretty check
